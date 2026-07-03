@@ -1,0 +1,37 @@
+name: CI Build Verification
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    name: Verify Build & Types
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Code Types & Astro Check
+        run: npm run typecheck
+
+      - name: Run Production Build
+        run: npm run build
+        env:
+          # Dummy values for build validation if needed (Astro runtime is dynamic, but we mock them to prevent warnings/errors)
+          SUPABASE_URL: "https://mock-url-for-build.supabase.co"
+          SUPABASE_ANON_KEY: "mock-anon-key"
+          SUPABASE_SERVICE_ROLE_KEY: "mock-service-key"
+          GEMINI_API_KEY: "mock-gemini-key"

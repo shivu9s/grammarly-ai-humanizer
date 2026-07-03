@@ -957,7 +957,7 @@
     tabHumanizer.addEventListener('click', () => {
       state.tab = 'humanizer';
       tabHumanizer.className = "px-5 py-1.5 text-sm font-medium rounded-full bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
-      tabDetector.className = "px-5 py-1.5 text-sm font-medium rounded-full text-body hover:text-ink transition-all duration-150 cursor-pointer";
+      if (tabDetector) tabDetector.className = "px-5 py-1.5 text-sm font-medium rounded-full text-body hover:text-ink transition-all duration-150 cursor-pointer";
       if (humanizerParamsCard) humanizerParamsCard.classList.remove('hidden');
       if (actionHumanize) actionHumanize.classList.remove('hidden');
       if (actionCheckAi) actionCheckAi.textContent = "Check AI Score Only";
@@ -967,8 +967,8 @@
   if (tabDetector) {
     tabDetector.addEventListener('click', () => {
       state.tab = 'detector';
-      tabDetector.className = "px-5 py-1.5 text-sm font-medium rounded-full bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
-      tabHumanizer.className = "px-5 py-1.5 text-sm font-medium rounded-full text-body hover:text-ink transition-all duration-150 cursor-pointer";
+      if (tabDetector) tabDetector.className = "px-5 py-1.5 text-sm font-medium rounded-full bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
+      if (tabHumanizer) tabHumanizer.className = "px-5 py-1.5 text-sm font-medium rounded-full text-body hover:text-ink transition-all duration-150 cursor-pointer";
       if (humanizerParamsCard) humanizerParamsCard.classList.add('hidden');
       if (actionHumanize) actionHumanize.classList.add('hidden');
       if (actionCheckAi) actionCheckAi.textContent = "Detect AI Likelihood";
@@ -1140,7 +1140,7 @@
         // Apply occasionally (e.g. 25% of sentences for Casual/Creative tones, but never in Academic)
         const isResume = text.toLowerCase().includes("opportunity") || text.toLowerCase().includes("career") || text.toLowerCase().includes("full-stack");
         if (!isResume && options.tone !== 'academic' && (sentIdx === 0 || sentIdx % 4 === 0) && cleanSent.split(/\s+/).length > 8) {
-          const introList = TONE_INTRODUCERS[options.tone] || TONE_INTRODUCERS.casual;
+          const introList = (TONE_INTRODUCERS as any)[options.tone] || TONE_INTRODUCERS.casual;
           const randomIntro = introList[Math.floor(Math.random() * introList.length)];
           
           // Make sure it doesn't already start with capitals of similar length
@@ -1243,6 +1243,7 @@
 
     let outputText = '';
     let usedApi = false;
+    let apiData: any = null;
 
     if (shouldHumanize) {
       // Try Gemini API first for real humanization
@@ -1266,7 +1267,7 @@
 
         // Check for rate limit status (429) from server
         if (apiResponse.status === 429) {
-          const apiData = await apiResponse.json().catch(() => ({}));
+          apiData = await apiResponse.json().catch(() => ({}));
           markStep('step-2', 'error');
           markStep('step-3', 'error');
           
@@ -1294,7 +1295,7 @@
 
         // Check for bad request (400) from server (e.g. word count limit bypassed client)
         if (apiResponse.status === 400) {
-          const apiData = await apiResponse.json().catch(() => ({}));
+          apiData = await apiResponse.json().catch(() => ({}));
           markStep('step-2', 'error');
           markStep('step-3', 'error');
           if (processingCard) processingCard.classList.add('hidden');
@@ -1310,7 +1311,7 @@
         markStep('step-2', 'done');
         markStep('step-3', 'active');
 
-        const apiData = await apiResponse.json();
+        apiData = await apiResponse.json();
 
         if (apiResponse.ok && apiData.output && !apiData.fallback) {
           outputText = apiData.output.trim();
@@ -1451,7 +1452,7 @@
     metricAiAfter.textContent = `${data.aiAfter}%`;
 
     if (outputWordCountEl) {
-      outputWordCountEl.textContent = `Words: ${data.output.split(/\s+/).filter(w => w.trim().length > 0).length}`;
+      outputWordCountEl.textContent = `Words: ${data.output.split(/\s+/).filter((w: string) => w.trim().length > 0).length}`;
     }
 
     renderOutputText();
@@ -1475,7 +1476,7 @@
       paragraphsMap.get(paraIdx).push(sent);
     });
 
-    paragraphsMap.forEach((sentences, paraIdx) => {
+    paragraphsMap.forEach((sentences) => {
       const p = document.createElement('p');
       p.className = "mb-4";
       
@@ -1516,8 +1517,8 @@
     sentenceExplorerCard.classList.remove('hidden');
 
     // Create 3 realistic sentence alternatives based on mode
-    const modeAlternatives = MOCK_ALTERNATIVES[state.mode] || MOCK_ALTERNATIVES.standard;
-    sentenceExplorerOptions.innerHTML = modeAlternatives.map((alt, idx) => `
+    const modeAlternatives = (MOCK_ALTERNATIVES as any)[state.mode] || MOCK_ALTERNATIVES.standard;
+    sentenceExplorerOptions.innerHTML = modeAlternatives.map((alt: string) => `
       <button class="w-full text-left p-2 text-xs text-ink bg-canvas hover:bg-canvas-soft-2 border border-hairline rounded transition-colors duration-150 swap-alternative-btn cursor-pointer" data-sent-id="${sentenceObj.id}" data-text="${alt}">
         ${alt}
       </button>
