@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /signin/
+Disallow: /signup/
+Disallow: /checkout/
+Disallow: /api/
+
+Sitemap: https://grammarlyaihumanizer.com/sitemap.xml
