@@ -4,18 +4,10 @@ export const prerender = false;
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { getSession, getUserById } from '../lib/db';
+import { getAuthenticatedUser } from '../lib/db';
 
 // Server-side auth check
-const sessionId = Astro.cookies.get('session_id')?.value;
-let user = null;
-
-if (sessionId) {
-  const session = await getSession(sessionId);
-  if (session) {
-    user = await getUserById(session.userId);
-  }
-}
+const user = await getAuthenticatedUser(Astro.cookies);
 
 // Redirect to signin if not authenticated
 if (!user) {

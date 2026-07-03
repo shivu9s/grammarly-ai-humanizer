@@ -69,6 +69,15 @@ import Footer from '../components/Footer.astro';
 
   // Check URL parameters for registered status
   const urlParams = new URLSearchParams(window.location.search);
+  const redirect = urlParams.get('redirect');
+  
+  if (redirect) {
+    const signupLink = document.querySelector('a[href="/signup/"]') as HTMLAnchorElement;
+    if (signupLink) {
+      signupLink.href = `/signup/?redirect=${encodeURIComponent(redirect)}`;
+    }
+  }
+
   if (urlParams.get('registered') === 'true' && statusBanner) {
     statusBanner.textContent = 'Account created successfully! Please sign in.';
     statusBanner.className = 'p-3 text-xs bg-success/10 text-link-deep border border-link/20 rounded-md';

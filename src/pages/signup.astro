@@ -80,6 +80,17 @@ import Footer from '../components/Footer.astro';
   const successBanner = document.getElementById('success-banner');
   const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
 
+  // Check URL parameters for redirect target
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirect = urlParams.get('redirect');
+
+  if (redirect) {
+    const signinLink = document.querySelector('a[href="/signin/"]') as HTMLAnchorElement;
+    if (signinLink) {
+      signinLink.href = `/signin/?redirect=${encodeURIComponent(redirect)}`;
+    }
+  }
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!errorBanner || !successBanner || !submitBtn) return;
@@ -130,8 +141,9 @@ import Footer from '../components/Footer.astro';
       if (response.ok) {
         successBanner.textContent = 'Registration successful! Redirecting to Sign In...';
         successBanner.classList.remove('hidden');
+        const redirectSuffix = redirect ? `&redirect=${encodeURIComponent(redirect)}` : '';
         setTimeout(() => {
-          window.location.href = `/signin/?registered=true&username=${encodeURIComponent(username)}`;
+          window.location.href = `/signin/?registered=true&username=${encodeURIComponent(username)}${redirectSuffix}`;
         }, 1500);
       } else {
         errorBanner.textContent = data.error || 'Registration failed.';
