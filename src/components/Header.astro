@@ -21,7 +21,7 @@
       <a href="/#faqs" class="text-sm font-normal text-body hover:text-ink transition-colors">FAQs</a>
       <a href="/about-us/" class="text-sm font-normal text-body hover:text-ink transition-colors">About Us</a>
       <a href="/contact-us/" class="text-sm font-normal text-body hover:text-ink transition-colors">Contact</a>
-      <a href="/checkout/" class="text-sm font-semibold text-success hover:underline transition-colors mr-2">Go Premium</a>
+      <a href="/checkout/" id="nav-go-premium" class="text-sm font-semibold text-success hover:underline transition-colors mr-2">Go Premium</a>
       <a href="https://docs.astro.build" target="_blank" rel="noopener noreferrer" class="text-sm font-normal text-body hover:text-ink transition-colors flex items-center gap-1">
         Docs
         <svg class="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -70,7 +70,7 @@
       <a href="/#faqs" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">FAQs</a>
       <a href="/about-us/" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">About Us</a>
       <a href="/contact-us/" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">Contact Us</a>
-      <a href="/checkout/" class="block rounded-md px-3 py-2 text-base font-semibold text-success hover:bg-canvas-soft-2 hover:underline">Go Premium (₹199)</a>
+      <a href="/checkout/" id="mobile-nav-go-premium" class="block rounded-md px-3 py-2 text-base font-semibold text-success hover:bg-canvas-soft-2 hover:underline">Go Premium (₹199)</a>
       <a href="/#console" class="block text-center rounded-md bg-primary text-on-primary px-3 py-2.5 mt-4 text-base font-medium shadow-sm hover:opacity-90">Start Humanizing</a>
       
       <!-- Mobile Auth Container -->
@@ -113,6 +113,8 @@
     const mobileContainer = document.getElementById('mobile-auth-container');
     const defaultCta = document.querySelector('.nav-cta-signup');
     const mobileDefaultCta = document.querySelector('#mobile-menu a[href="/#console"]:last-child');
+    const goPremiumLink = document.getElementById('nav-go-premium');
+    const mobileGoPremiumLink = document.getElementById('mobile-nav-go-premium');
     
     try {
       const response = await fetch('/api/auth/user');
@@ -122,6 +124,10 @@
         // Hide default CTA
         if (defaultCta) defaultCta.classList.add('hidden');
         if (mobileDefaultCta) mobileDefaultCta.classList.add('hidden');
+        
+        // Hide redundant "Go Premium" links from navigation menus when logged in (since we have the Upgrade CTA or Premium status in the account menu)
+        if (goPremiumLink) goPremiumLink.classList.add('hidden');
+        if (mobileGoPremiumLink) mobileGoPremiumLink.classList.add('hidden');
         
         const premiumBadge = data.isPremium 
           ? `<span class="px-2 py-0.5 text-[9px] font-bold text-success bg-success/10 border border-success/20 rounded-full font-mono">PREMIUM</span>` 
@@ -164,6 +170,10 @@
       } else {
         // Render signed out actions
         if (defaultCta) defaultCta.classList.remove('hidden');
+        
+        // Show "Go Premium" links for guest users
+        if (goPremiumLink) goPremiumLink.classList.remove('hidden');
+        if (mobileGoPremiumLink) mobileGoPremiumLink.classList.remove('hidden');
         
         if (desktopContainer) {
           desktopContainer.innerHTML = `
