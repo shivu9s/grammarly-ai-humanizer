@@ -1,0 +1,107 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout 
+  title="About Us | Grammarly AI Humanizer" 
+  description="Learn about Grammarly AI Humanizer. We are dedicated to providing the best free, undetectable AI humanizer engine to restore natural flow to robotic text."
+  canonicalUrl="https://grammarlyaihumanizer.com/about-us/"
+>
+  <Header />
+  
+  <main class="flex-grow relative py-20 px-4 sm:px-6 lg:px-8">
+    <!-- Floating Mesh Background -->
+    <div class="mesh-backdrop"></div>
+    
+    <div class="mx-auto max-w-3xl relative z-10">
+      <!-- Page Header -->
+      <div class="text-center mb-12">
+        <span class="text-xs font-mono uppercase tracking-widest text-link mb-3 inline-block">Our Mission</span>
+        <h1 class="text-4xl font-bold tracking-[-1px] text-ink mb-4">
+          About Grammarly AI Humanizer
+        </h1>
+        <p class="text-mute text-xs font-mono">Restoring Authenticity to Modern Digital Writing</p>
+      </div>
+      
+      <!-- Content Card -->
+      <div class="card-marketing-large bg-canvas border border-hairline p-8 sm:p-12 rounded-lg shadow-sm space-y-8 text-body text-sm leading-relaxed">
+        
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold tracking-tight text-ink">1. Who We Are</h2>
+          <p>
+            At <strong>Grammarly AI Humanizer</strong>, we are a team of software developers, linguists, and AI research engineers passionate about the power of written expression. As artificial intelligence models continue to dominate writing workflows, the line between machine-made structure and human spontaneity has blurred. 
+          </p>
+          <p>
+            We built this platform to give creators, marketers, educators, and students an accessible, developer-first text conversion engine that restores natural rhythm, pacing, and vocabulary diversity to AI-generated text.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold tracking-tight text-ink">2. Why We Built It</h2>
+          <p>
+            AI detection tools (such as GPTZero, Turnitin, Copyleaks, and ZeroGPT) rely on statistical calculations known as <strong>perplexity</strong> and <strong>burstiness</strong> to flag writing as robotic. Unfortunately, these detectors suffer from major flaws:
+          </p>
+          <ul class="list-disc pl-5 space-y-2">
+            <li>
+              <strong>False Positives:</strong> They frequently flag natural human writing, particularly content authored by non-native English speakers or writers who naturally prefer direct, structured communication.
+            </li>
+            <li>
+              <strong>Creativity Penalties:</strong> They penalize professional copywriters who use established templates or industry-standard terms of art.
+            </li>
+          </ul>
+          <p>
+            Our tool was designed to level the playing field, giving writers the security to leverage generative AI models as writing partners while ensuring their final outputs bypass incorrect automated flags.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold tracking-tight text-ink">3. The Technology Behind Undetectable Writing</h2>
+          <p>
+            Unlike basic "article spinners" that run simple synonym replacements (often resulting in grammatically broken, incoherent sentences), our humanizer uses an advanced contextual paraphrase engine:
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div class="card-soft border border-hairline p-4 space-y-2">
+              <h4 class="text-xs font-mono uppercase text-link font-semibold">Sentence Rhythm Variance</h4>
+              <p class="text-xs text-mute leading-relaxed">
+                We analyze and modify the structure of sentences to combine short, punchy statements with longer, explanatory clauses—mimicking the natural "burstiness" of human thought patterns.
+              </p>
+            </div>
+            <div class="card-soft border border-hairline p-4 space-y-2">
+              <h4 class="text-xs font-mono uppercase text-violet font-semibold">Semantic Integrity Protection</h4>
+              <p class="text-xs text-mute leading-relaxed">
+                Our models recognize critical technical terminology, proper nouns, and numbers, leaving them unaltered to prevent the vocabulary scramble that ruins typical spun text.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold tracking-tight text-ink">4. Our Core Values</h2>
+          <ul class="list-disc pl-5 space-y-2">
+            <li>
+              <strong>Privacy First:</strong> Your input text is processed on-the-fly and never saved. We believe in absolute text ownership.
+            </li>
+            <li>
+              <strong>Free Access:</strong> We provide an accessible, high-performance web console that anyone can use for free to improve their text.
+            </li>
+            <li>
+              <strong>Continuous Improvement:</strong> Detection tools constantly update their algorithms. We iterate daily to ensure our engine stays ahead, outputting clean, undetectable prose.
+            </li>
+          </ul>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold tracking-tight text-ink">5. Support the Mission</h2>
+          <p>
+            We love hearing from our community. If you have recommendations for our vocabulary presets, want to report an API bug, or need help with a custom integrations project, check out our <a href="/contact-us/" class="text-link hover:underline font-medium">Contact Us</a> page. Let's make digital text more human, together.
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </main>
+  
+  <Footer />
+</Layout>

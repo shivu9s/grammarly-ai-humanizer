@@ -1,0 +1,197 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout 
+  title="Contact Us | Grammarly AI Humanizer" 
+  description="Contact Grammarly AI Humanizer. Get in touch with our customer support and engineering teams for questions, business inquiries, or feature suggestions."
+  canonicalUrl="https://grammarlyaihumanizer.com/contact-us/"
+>
+  <Header />
+  
+  <main class="flex-grow relative py-20 px-4 sm:px-6 lg:px-8">
+    <!-- Floating Mesh Background -->
+    <div class="mesh-backdrop"></div>
+    
+    <div class="mx-auto max-w-4xl relative z-10">
+      <!-- Page Header -->
+      <div class="text-center mb-12">
+        <span class="text-xs font-mono uppercase tracking-widest text-link mb-3 inline-block">Support desk</span>
+        <h1 class="text-4xl font-bold tracking-[-1px] text-ink mb-4">
+          Contact Our Team
+        </h1>
+        <p class="text-body text-base max-w-lg mx-auto">
+          Have questions about bypassing detection, API limits, or suggestions? Send us a message and we'll reply as soon as possible.
+        </p>
+      </div>
+      
+      <!-- Split Layout: Contact Form & Info Card -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-stretch">
+        
+        <!-- Contact Form Card -->
+        <div class="md:col-span-3 card-marketing bg-canvas border border-hairline p-6 sm:p-8 rounded-lg shadow-sm flex flex-col justify-between">
+          <form id="contact-form" class="space-y-4">
+            <div>
+              <label for="name" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-1.5">Full Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                required 
+                placeholder="John Doe" 
+                class="form-input"
+              />
+            </div>
+            
+            <div>
+              <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-1.5">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                required 
+                placeholder="john@example.com" 
+                class="form-input"
+              />
+            </div>
+            
+            <div>
+              <label for="subject" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-1.5">Subject</label>
+              <input 
+                type="text" 
+                id="subject" 
+                name="subject" 
+                required 
+                placeholder="Inquiry about API access" 
+                class="form-input"
+              />
+            </div>
+            
+            <div>
+              <label for="message" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-1.5">Message</label>
+              <textarea 
+                id="message" 
+                name="message" 
+                rows="5" 
+                required 
+                placeholder="Write your message here..." 
+                class="w-full bg-canvas text-ink border border-hairline text-sm font-sans rounded-md p-3 outline-none focus:border-hairline-strong transition-all duration-150 focus:ring-2 focus:ring-ink/5 dark:focus:ring-white/10"
+              ></textarea>
+            </div>
+            
+            <button 
+              type="submit" 
+              class="button-primary w-full cursor-pointer text-sm py-3 transition-all duration-200"
+            >
+              Send Message
+            </button>
+          </form>
+          
+          <!-- Success State (hidden by default) -->
+          <div id="success-state" class="hidden text-center py-12 space-y-4">
+            <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-success/10 text-success border border-success/20">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-ink">Message Sent Successfully!</h3>
+            <p class="text-body text-xs leading-relaxed max-w-xs mx-auto">
+              Thank you for contacting us. Our support engineering team will review your message and reach out to you within 24 hours.
+            </p>
+            <button 
+              id="reset-form-btn" 
+              class="button-secondary text-xs px-4 py-2 mt-4 cursor-pointer"
+            >
+              Send Another Message
+            </button>
+          </div>
+        </div>
+        
+        <!-- Info & FAQ Sidebar -->
+        <div class="md:col-span-2 space-y-6 flex flex-col justify-between">
+          <div class="card-soft border border-hairline bg-canvas p-6 rounded-lg space-y-4">
+            <h3 class="text-base font-bold text-ink tracking-tight">Direct Channels</h3>
+            
+            <div class="space-y-3 text-xs">
+              <div class="flex items-start gap-3">
+                <svg class="h-4 w-4 text-link mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <div>
+                  <h4 class="font-semibold text-ink">Support Email</h4>
+                  <p class="text-mute mt-0.5">devilfake8c@gmail.com</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start gap-3">
+                <svg class="h-4 w-4 text-violet mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <h4 class="font-semibold text-ink">Business Hours</h4>
+                  <p class="text-mute mt-0.5">Monday - Friday: 9 AM - 6 PM UTC</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-soft border border-hairline bg-canvas p-6 rounded-lg space-y-4">
+            <h3 class="text-base font-bold text-ink tracking-tight">Quick Inquiries</h3>
+            
+            <div class="space-y-3 text-xs leading-relaxed">
+              <div>
+                <h4 class="font-semibold text-ink">Is it safe to paste confidential work?</h4>
+                <p class="text-mute mt-0.5">Yes, all inputs are processed live in-memory and immediately discarded. We do not store or sell text.</p>
+              </div>
+              <div>
+                <h4 class="font-semibold text-ink">Do you offer API access?</h4>
+                <p class="text-mute mt-0.5">We are currently testing our API. Reach out via the form and we can whitelist your developer profile.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </main>
+  
+  <Footer />
+</Layout>
+
+<script>
+  // Form submission and success state script
+  const contactForm = document.getElementById('contact-form') as HTMLFormElement;
+  const successState = document.getElementById('success-state');
+  const resetFormBtn = document.getElementById('reset-form-btn');
+
+  if (contactForm && successState && resetFormBtn) {
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Simulate form submission to backend
+      const formData = new FormData(contactForm);
+      const name = formData.get('name');
+      const email = formData.get('email');
+      const subject = formData.get('subject');
+      const message = formData.get('message');
+      
+      // Print local log or handle API submit
+      console.log('Sending message:', { name, email, subject, message });
+      
+      // Hide form and show success state
+      contactForm.classList.add('hidden');
+      successState.classList.remove('hidden');
+    });
+
+    resetFormBtn.addEventListener('click', () => {
+      // Reset form controls
+      contactForm.reset();
+      
+      // Show form and hide success state
+      successState.classList.add('hidden');
+      contactForm.classList.remove('hidden');
+    });
+  }
+</script>
