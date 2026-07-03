@@ -1,28 +1,20 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { getSession, updateUserPremium } from '../../../lib/db';
+import { getAuthenticatedUser, updateUserPremium } from '../../../lib/db';
 
 export const POST: APIRoute = async ({ cookies }) => {
   try {
-    const sessionId = cookies.get('session_id')?.value;
-    if (!sessionId) {
+    const user = await getAuthenticatedUser(cookies);
+    if (!user) {
       return new Response(JSON.stringify({ error: 'Please sign in first.' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    const session = await getSession(sessionId);
-    if (!session) {
-      return new Response(JSON.stringify({ error: 'Session expired. Please sign in again.' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Set user as premium
-    const updatedUser = await updateUserPremium(session.userId, true);
+    // Upgrade user premium field in Supabase profiles
+    const updatedUser = await updateUserPremium(user.id, true);
 
     return new Response(JSON.stringify({
       success: true,

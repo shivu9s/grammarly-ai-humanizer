@@ -2,7 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { getSession, getUserById, trackUserHumanization } from '../../lib/db';
+import { getAuthenticatedUser, trackUserHumanization } from '../../lib/db';
 
 const HUMANIZE_PROMPTS: Record<string, string> = {
   professional: `You are an expert human writer and copyeditor. Your goal is to rewrite the user's text so that it reads completely naturally, has a high human-like flow, and passes all AI detection tools (like ZeroGPT, GPTZero, Copyleaks, Turnitin) as 100% human-written.
@@ -133,15 +133,8 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
       });
     }
 
-    // Retrieve session and check user
-    const sessionId = cookies.get('session_id')?.value;
-    let loggedInUser = null;
-    if (sessionId) {
-      const session = await getSession(sessionId);
-      if (session) {
-        loggedInUser = await getUserById(session.userId);
-      }
-    }
+    // Retrieve authenticated user from cookies
+    const loggedInUser = await getAuthenticatedUser(cookies);
 
     const isPremium = loggedInUser?.isPremium || false;
     const maxWordLimit = isPremium ? 2000 : 300;

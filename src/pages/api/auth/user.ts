@@ -1,31 +1,12 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { getSession, getUserById } from '../../../lib/db';
+import { getAuthenticatedUser } from '../../../lib/db';
 
 export const GET: APIRoute = async ({ cookies }) => {
   try {
-    const sessionId = cookies.get('session_id')?.value;
-    if (!sessionId) {
-      return new Response(JSON.stringify({ loggedIn: false }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const session = await getSession(sessionId);
-    if (!session) {
-      // Clear invalid cookie
-      cookies.delete('session_id', { path: '/' });
-      return new Response(JSON.stringify({ loggedIn: false }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const user = await getUserById(session.userId);
+    const user = await getAuthenticatedUser(cookies);
     if (!user) {
-      cookies.delete('session_id', { path: '/' });
       return new Response(JSON.stringify({ loggedIn: false }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }

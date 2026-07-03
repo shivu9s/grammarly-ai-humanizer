@@ -1,13 +1,23 @@
-import { promises as fs } from 'node:fs';
-import path from 'node:path';
-import crypto from 'node:crypto';
+import { createClient } from '@supabase/supabase-js';
 
-const DB_PATH = path.resolve(process.cwd(), 'db.json');
+// Read environmental variables (Astro client/server compatible)
+const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
+const supabaseServiceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+// Clients
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: { persistSession: false }
+});
+
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: { persistSession: false }
+});
 
 export interface User {
   id: string;
   username: string;
-  passwordHash: string;
+  passwordHash?: string; // Kept for compatibility, not stored for Supabase users
   isPremium: boolean;
   humanizeTimestamps: number[];
 }
@@ -18,137 +28,202 @@ export interface Session {
   expiresAt: number;
 }
 
-interface DatabaseSchema {
-  users: User[];
-  sessions: Session[];
-}
-
-// Simple serial queue to prevent concurrent write race conditions
-class WriteQueue {
-  private queue: Promise<any> = Promise.resolve();
-
-  enqueue<T>(operation: () => Promise<T>): Promise<T> {
-    const next = this.queue.then(operation);
-    this.queue = next.catch(() => {});
-    return next;
+// Utility to helper parse / convert usernames to virtual emails
+export function normalizeUsernameToEmail(username: string): string {
+  if (username.includes('@')) {
+    return username.trim().toLowerCase();
   }
+  return `${username.trim().toLowerCase()}@local.humanizer`;
 }
 
-const queue = new WriteQueue();
-
-async function readDb(): Promise<DatabaseSchema> {
-  try {
-    const content = await fs.readFile(DB_PATH, 'utf-8');
-    return JSON.parse(content);
-  } catch (error) {
-    // If file doesn't exist, return empty structure
-    return { users: [], sessions: [] };
-  }
-}
-
-async function writeDb(data: DatabaseSchema): Promise<void> {
-  await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
-}
-
+// Kept for backward compatibility if needed, but not used by new Supabase Auth flow
 export function hashPassword(password: string): string {
-  return crypto.createHash('sha256').update(password).digest('hex');
+  return password; 
+}
+
+// Get the currently authenticated user from cookies, handling session refresh
+export async function getAuthenticatedUser(cookies: any): Promise<User | null> {
+  const accessToken = cookies.get('sb-access-token')?.value;
+  const refreshToken = cookies.get('sb-refresh-token')?.value;
+
+  if (!accessToken || !refreshToken) {
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
+
+    if (error || !data.user) {
+      cookies.delete('sb-access-token', { path: '/' });
+      cookies.delete('sb-refresh-token', { path: '/' });
+      return null;
+    }
+
+    // If session was renewed (e.g. token refreshed), update the cookies
+    if (data.session) {
+      cookies.set('sb-access-token', data.session.access_token, {
+        path: '/',
+        httpOnly: true,
+        secure: false, // allow localhost http testing
+        maxAge: 7 * 24 * 60 * 60,
+        sameSite: 'lax'
+      });
+      cookies.set('sb-refresh-token', data.session.refresh_token, {
+        path: '/',
+        httpOnly: true,
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60,
+        sameSite: 'lax'
+      });
+    }
+
+    // Get the user profile from Supabase Database
+    const profile = await getUserById(data.user.id);
+    return profile || null;
+  } catch (err) {
+    return null;
+  }
 }
 
 // Users API
 export async function getUserByUsername(username: string): Promise<User | undefined> {
-  const db = await readDb();
-  return db.users.find(u => u.username.toLowerCase() === username.toLowerCase());
+  const { data: profile, error } = await supabaseAdmin
+    .from('profiles')
+    .select('*')
+    .ilike('username', username)
+    .maybeSingle();
+
+  if (error || !profile) {
+    return undefined;
+  }
+
+  return {
+    id: profile.id,
+    username: profile.username,
+    isPremium: profile.is_premium,
+    humanizeTimestamps: (profile.humanize_timestamps || []).map((t: any) => Number(t))
+  };
 }
 
 export async function getUserById(id: string): Promise<User | undefined> {
-  const db = await readDb();
-  return db.users.find(u => u.id === id);
+  const { data: profile, error } = await supabaseAdmin
+    .from('profiles')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !profile) {
+    return undefined;
+  }
+
+  return {
+    id: profile.id,
+    username: profile.username,
+    isPremium: profile.is_premium,
+    humanizeTimestamps: (profile.humanize_timestamps || []).map((t: any) => Number(t))
+  };
 }
 
-export async function createUser(username: string, passwordHash: string): Promise<User> {
-  return queue.enqueue(async () => {
-    const db = await readDb();
-    
-    // Double check if username exists inside queue
-    const exists = db.users.some(u => u.username.toLowerCase() === username.toLowerCase());
-    if (exists) {
-      throw new Error('Username already exists');
-    }
-
-    const newUser: User = {
-      id: crypto.randomUUID(),
+export async function createUser(id: string, username: string): Promise<User> {
+  const { data, error } = await supabaseAdmin
+    .from('profiles')
+    .insert({
+      id,
       username,
-      passwordHash,
-      isPremium: false,
-      humanizeTimestamps: []
-    };
+      is_premium: false,
+      humanize_timestamps: []
+    })
+    .select()
+    .single();
 
-    db.users.push(newUser);
-    await writeDb(db);
-    return newUser;
-  });
+  if (error || !data) {
+    throw new Error(error?.message || 'Failed to create user profile in database.');
+  }
+
+  return {
+    id: data.id,
+    username: data.username,
+    isPremium: data.is_premium,
+    humanizeTimestamps: (data.humanize_timestamps || []).map((t: any) => Number(t))
+  };
 }
 
 export async function updateUserPremium(userId: string, isPremium: boolean): Promise<User> {
-  return queue.enqueue(async () => {
-    const db = await readDb();
-    const userIndex = db.users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
-      throw new Error('User not found');
-    }
+  const { data, error } = await supabaseAdmin
+    .from('profiles')
+    .update({ is_premium: isPremium })
+    .eq('id', userId)
+    .select()
+    .single();
 
-    db.users[userIndex].isPremium = isPremium;
-    await writeDb(db);
-    return db.users[userIndex];
-  });
+  if (error || !data) {
+    throw new Error(error?.message || 'Failed to update premium status in database.');
+  }
+
+  return {
+    id: data.id,
+    username: data.username,
+    isPremium: data.is_premium,
+    humanizeTimestamps: (data.humanize_timestamps || []).map((t: any) => Number(t))
+  };
 }
 
 // Track/check humanizations
 export async function trackUserHumanization(userId: string): Promise<{ allowed: boolean; remaining: number; maxLimit: number }> {
-  return queue.enqueue(async () => {
-    const db = await readDb();
-    const userIndex = db.users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
-      throw new Error('User not found');
-    }
+  const profile = await getUserById(userId);
+  if (!profile) {
+    throw new Error('User profile not found.');
+  }
 
-    const user = db.users[userIndex];
-    const maxLimit = user.isPremium ? 100 : 10;
-    const now = Date.now();
-    const oneDayAgo = now - 24 * 60 * 60 * 1000;
+  const maxLimit = profile.isPremium ? 100 : 10;
+  const now = Date.now();
+  const oneDayAgo = now - 24 * 60 * 60 * 1000;
 
-    // Filter out old timestamps (> 24 hours)
-    user.humanizeTimestamps = (user.humanizeTimestamps || []).filter(t => t > oneDayAgo);
+  // Filter out timestamps older than 24 hours
+  const activeTimestamps = profile.humanizeTimestamps.filter(t => t > oneDayAgo);
 
-    if (user.humanizeTimestamps.length >= maxLimit) {
-      // Limit exceeded
-      await writeDb(db); // Save the cleaned up timestamps list anyway
-      return { allowed: false, remaining: 0, maxLimit };
-    }
+  if (activeTimestamps.length >= maxLimit) {
+    // Limit exceeded, save cleaned list anyway
+    await supabaseAdmin
+      .from('profiles')
+      .update({ humanize_timestamps: activeTimestamps })
+      .eq('id', userId);
 
-    // Add new timestamp
-    user.humanizeTimestamps.push(now);
-    await writeDb(db);
+    return { allowed: false, remaining: 0, maxLimit };
+  }
 
-    return {
-      allowed: true,
-      remaining: maxLimit - user.humanizeTimestamps.length,
-      maxLimit
-    };
-  });
+  // Add new timestamp
+  activeTimestamps.push(now);
+
+  const { error } = await supabaseAdmin
+    .from('profiles')
+    .update({ humanize_timestamps: activeTimestamps })
+    .eq('id', userId);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to track humanization usage.');
+  }
+
+  return {
+    allowed: true,
+    remaining: maxLimit - activeTimestamps.length,
+    maxLimit
+  };
 }
 
 export async function getUserRemainingHumanizations(userId: string): Promise<{ count: number; maxLimit: number }> {
-  const db = await readDb();
-  const user = db.users.find(u => u.id === userId);
-  if (!user) {
+  const profile = await getUserById(userId);
+  if (!profile) {
     return { count: 0, maxLimit: 10 };
   }
 
-  const maxLimit = user.isPremium ? 100 : 10;
+  const maxLimit = profile.isPremium ? 100 : 10;
   const now = Date.now();
   const oneDayAgo = now - 24 * 60 * 60 * 1000;
-  const activeTimestamps = (user.humanizeTimestamps || []).filter(t => t > oneDayAgo);
+  const activeTimestamps = profile.humanizeTimestamps.filter(t => t > oneDayAgo);
 
   return {
     count: activeTimestamps.length,
@@ -156,42 +231,19 @@ export async function getUserRemainingHumanizations(userId: string): Promise<{ c
   };
 }
 
-// Sessions
+// These session methods are kept for legacy compatibility but are handled in cookies directly via Supabase Auth
 export async function createSession(userId: string): Promise<Session> {
-  return queue.enqueue(async () => {
-    const db = await readDb();
-    
-    // Expire in 7 days
-    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
-    const newSession: Session = {
-      id: crypto.randomBytes(32).toString('hex'),
-      userId,
-      expiresAt
-    };
-
-    db.sessions.push(newSession);
-    await writeDb(db);
-    return newSession;
-  });
+  return {
+    id: 'supabase-handled',
+    userId,
+    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
+  };
 }
 
 export async function getSession(sessionId: string): Promise<Session | undefined> {
-  const db = await readDb();
-  const session = db.sessions.find(s => s.id === sessionId);
-  
-  if (session && session.expiresAt < Date.now()) {
-    // Session has expired, clean it up asynchronously
-    await destroySession(sessionId);
-    return undefined;
-  }
-  
-  return session;
+  return undefined;
 }
 
 export async function destroySession(sessionId: string): Promise<void> {
-  return queue.enqueue(async () => {
-    const db = await readDb();
-    db.sessions = db.sessions.filter(s => s.id !== sessionId);
-    await writeDb(db);
-  });
+  return;
 }

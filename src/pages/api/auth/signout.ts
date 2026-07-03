@@ -1,15 +1,16 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { destroySession } from '../../../lib/db';
+import { supabase } from '../../../lib/db';
 
 export const POST: APIRoute = async ({ cookies }) => {
   try {
-    const sessionId = cookies.get('session_id')?.value;
-    if (sessionId) {
-      await destroySession(sessionId);
-      cookies.delete('session_id', { path: '/' });
-    }
+    // Log out from Supabase Auth
+    await supabase.auth.signOut();
+
+    // Remove token cookies
+    cookies.delete('sb-access-token', { path: '/' });
+    cookies.delete('sb-refresh-token', { path: '/' });
 
     return new Response(JSON.stringify({ message: 'Logged out successfully!' }), {
       status: 200,
@@ -22,4 +23,4 @@ export const POST: APIRoute = async ({ cookies }) => {
     });
   }
 };
-export const GET = POST; // Allow simple links to signout as well
+export const GET = POST; // Allow simple GET request redirects to signout as well
