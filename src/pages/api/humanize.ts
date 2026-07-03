@@ -2,6 +2,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getSession, getUserById, trackUserHumanization } from '../../lib/db';
 
 const HUMANIZE_PROMPTS: Record<string, string> = {
   professional: `You are an expert human writer and copyeditor. Your goal is to rewrite the user's text so that it reads completely naturally, has a high human-like flow, and passes all AI detection tools (like ZeroGPT, GPTZero, Copyleaks, Turnitin) as 100% human-written.
@@ -120,7 +121,7 @@ function checkIpRateLimit(ip: string): { allowed: boolean; count: number } {
   return { allowed: true, count: timestamps.length };
 }
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
   try {
     const body = await request.json();
     const { text, tone = 'professional', strength = 'medium', language = 'english' } = body;
@@ -132,32 +133,62 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // 1. Max 300 words check
+    // Retrieve session and check user
+    const sessionId = cookies.get('session_id')?.value;
+    let loggedInUser = null;
+    if (sessionId) {
+      const session = await getSession(sessionId);
+      if (session) {
+        loggedInUser = await getUserById(session.userId);
+      }
+    }
+
+    const isPremium = loggedInUser?.isPremium || false;
+    const maxWordLimit = isPremium ? 2000 : 300;
+
+    // 1. Max word check based on tier
     const words = text.trim().split(/\s+/).filter(w => w.length > 0);
-    if (words.length > 300) {
+    if (words.length > maxWordLimit) {
       return new Response(JSON.stringify({ 
-        error: 'Text exceeds the maximum limit of 300 words. Please shorten your text and try again.' 
+        error: `Text exceeds the maximum limit of ${maxWordLimit} words. Please shorten your text and try again.` 
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // 2. IP Rate Limiting check
-    const ip = clientAddress || 
-               request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
-               request.headers.get('x-real-ip') || 
-               '127.0.0.1';
-               
-    const rateLimit = checkIpRateLimit(ip);
-    if (!rateLimit.allowed) {
-      return new Response(JSON.stringify({
-        error: 'Daily limit of 10 humanizations reached. Please try again in 24 hours.',
-        limitExceeded: true
-      }), {
-        status: 429,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    // 2. Rate Limiting check based on tier
+    if (loggedInUser) {
+      // Authenticated User count check
+      const rateLimit = await trackUserHumanization(loggedInUser.id);
+      if (!rateLimit.allowed) {
+        return new Response(JSON.stringify({
+          error: `Daily limit of ${rateLimit.maxLimit} humanizations reached. Please try again in 24 hours or upgrade to Premium for higher limits.`,
+          limitExceeded: true,
+          limit: rateLimit.maxLimit
+        }), {
+          status: 429,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    } else {
+      // Anonymous IP Rate Limiting check
+      const ip = clientAddress || 
+                 request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
+                 request.headers.get('x-real-ip') || 
+                 '127.0.0.1';
+                 
+      const rateLimit = checkIpRateLimit(ip);
+      if (!rateLimit.allowed) {
+        return new Response(JSON.stringify({
+          error: 'Daily limit of 10 humanizations reached. Please sign up or sign in to track your usage, or upgrade to Premium for higher limits.',
+          limitExceeded: true,
+          limit: 10
+        }), {
+          status: 429,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
     }
 
     const apiKey = import.meta.env.GEMINI_API_KEY;

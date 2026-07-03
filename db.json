@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "id": "17a2d4a4-fa3e-4ee4-888d-427b6b7fc4d6",
+      "username": "testbuyer20260702",
+      "passwordHash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+      "isPremium": true,
+      "humanizeTimestamps": []
+    }
+  ],
+  "sessions": []
+}

@@ -1,0 +1,149 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Sign Up | Grammarly AI Humanizer" description="Create an account to track your humanizations and unlock Premium membership.">
+  <Header />
+  <main class="flex-grow flex items-center justify-center py-16 px-4">
+    <div class="w-full max-w-md card-marketing-large">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold tracking-tight text-ink mb-2">Create an Account</h1>
+        <p class="text-sm text-body">Sign up to get started, track your limits, and upgrade to Premium.</p>
+      </div>
+
+      <form id="signup-form" class="space-y-5">
+        <div id="error-banner" class="hidden p-3 text-xs bg-error-soft text-error-deep border border-error/20 rounded-md"></div>
+        <div id="success-banner" class="hidden p-3 text-xs bg-success/10 text-link-deep border border-link/20 rounded-md"></div>
+
+        <div>
+          <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Username or Email</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            required 
+            placeholder="e.g. janesmith" 
+            class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required 
+            placeholder="••••••••" 
+            class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+          />
+        </div>
+
+        <div>
+          <label for="confirm-password" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Confirm Password</label>
+          <input 
+            type="password" 
+            id="confirm-password" 
+            name="confirm-password" 
+            required 
+            placeholder="••••••••" 
+            class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+          />
+        </div>
+
+        <button type="submit" id="submit-btn" class="w-full button-primary py-3 text-sm font-semibold rounded-md flex items-center justify-center gap-2">
+          Create Account
+        </button>
+      </form>
+
+      <div class="mt-6 text-center border-t border-hairline pt-6">
+        <p class="text-xs text-body">
+          Already have an account? 
+          <a href="/signin/" class="text-link hover:underline font-medium ml-1">Sign In</a>
+        </p>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const form = document.getElementById('signup-form') as HTMLFormElement;
+  const usernameInput = document.getElementById('username') as HTMLInputElement;
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  const confirmPasswordInput = document.getElementById('confirm-password') as HTMLInputElement;
+  const errorBanner = document.getElementById('error-banner');
+  const successBanner = document.getElementById('success-banner');
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!errorBanner || !successBanner || !submitBtn) return;
+
+    errorBanner.classList.add('hidden');
+    successBanner.classList.add('hidden');
+
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    if (username.length < 3) {
+      errorBanner.textContent = 'Username must be at least 3 characters.';
+      errorBanner.classList.remove('hidden');
+      return;
+    }
+
+    if (password.length < 6) {
+      errorBanner.textContent = 'Password must be at least 6 characters.';
+      errorBanner.classList.remove('hidden');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      errorBanner.textContent = 'Passwords do not match.';
+      errorBanner.classList.remove('hidden');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+      <svg class="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Creating Account...
+    `;
+
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        successBanner.textContent = 'Registration successful! Redirecting to Sign In...';
+        successBanner.classList.remove('hidden');
+        setTimeout(() => {
+          window.location.href = `/signin/?registered=true&username=${encodeURIComponent(username)}`;
+        }, 1500);
+      } else {
+        errorBanner.textContent = data.error || 'Registration failed.';
+        errorBanner.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    } catch (err) {
+      errorBanner.textContent = 'An unexpected error occurred. Please try again.';
+      errorBanner.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Account';
+    }
+  });
+</script>

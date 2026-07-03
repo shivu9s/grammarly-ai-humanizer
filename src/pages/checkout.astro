@@ -1,0 +1,272 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getSession, getUserById } from '../lib/db';
+
+// Server-side auth check
+const sessionId = Astro.cookies.get('session_id')?.value;
+let user = null;
+
+if (sessionId) {
+  const session = await getSession(sessionId);
+  if (session) {
+    user = await getUserById(session.userId);
+  }
+}
+
+// Redirect to signin if not authenticated
+if (!user) {
+  return Astro.redirect('/signin/?redirect=/checkout/');
+}
+
+// If user is already premium, redirect back to home with message
+if (user.isPremium) {
+  return Astro.redirect('/#console');
+}
+---
+
+<Layout title="Premium Upgrade | Grammarly AI Humanizer" description="Upgrade to Grammarly AI Humanizer Premium for 199 RS. Unlock 100 daily humanizations and a 2000-word limit.">
+  <Header />
+  <main class="flex-grow py-12 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-3xl">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-ink mb-2">Upgrade to Premium</h1>
+        <p class="text-sm text-body">Unleash the full potential of undetectable human-written content.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        <!-- Plan features (Left column on desktop) -->
+        <div class="md:col-span-5 space-y-6">
+          <div class="card-marketing bg-canvas p-6!">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-mono uppercase tracking-wider text-mute">Premium Plan</span>
+              <span class="px-2 py-0.5 text-[10px] font-bold text-success bg-success/10 rounded-full">Best Value</span>
+            </div>
+            
+            <div class="mb-6">
+              <div class="flex items-baseline gap-1 text-ink">
+                <span class="text-3xl font-bold">₹199</span>
+                <span class="text-xs text-mute font-mono">one-time</span>
+              </div>
+              <p class="text-xs text-mute mt-1">Upgrade your account instantly</p>
+            </div>
+
+            <ul class="space-y-3.5 text-xs text-body border-t border-hairline pt-5">
+              <li class="flex items-start gap-2">
+                <svg class="h-4 w-4 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span><strong>100 daily humanizations</strong> (vs. 10 limit for free)</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="h-4 w-4 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span><strong>2,000 words limit</strong> per request (vs. 300)</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="h-4 w-4 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Full access to <strong>Advanced, Academic, and Creative modes</strong></span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="h-4 w-4 text-success shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Highest priority generation speeds</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Checkout Form (Right column on desktop) -->
+        <div class="md:col-span-7 space-y-6">
+          <div class="card-marketing bg-canvas p-6! space-y-6 relative overflow-hidden" id="checkout-container">
+            <!-- Simulated Payment Success Overlay (Initially Hidden) -->
+            <div id="payment-success-screen" class="hidden absolute inset-0 bg-canvas flex flex-col justify-center items-center text-center p-6 z-10 animate-fade-in">
+              <div class="p-4 rounded-full bg-success/10 text-success border border-success/20 mb-4 animate-bounce">
+                <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-ink mb-1">Upgrade Successful!</h3>
+              <p class="text-sm text-body mb-6">Welcome to Grammarly AI Humanizer Premium.</p>
+              <div class="text-xs text-mute font-mono">Redirecting you to the console...</div>
+            </div>
+
+            <h3 class="text-sm font-mono uppercase tracking-wider text-mute border-b border-hairline pb-2">Simulate Payment (199 RS)</h3>
+
+            <!-- Payment Mode Selector -->
+            <div>
+              <label class="block text-xs font-semibold text-body mb-2">Select Payment Method</label>
+              <div class="grid grid-cols-2 gap-3">
+                <button type="button" id="pay-mode-card" class="py-2.5 px-4 text-xs font-medium rounded-md border border-hairline-strong bg-canvas-soft-2 text-ink transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                  Credit Card
+                </button>
+                <button type="button" id="pay-mode-upi" class="py-2.5 px-4 text-xs font-medium rounded-md border border-hairline bg-canvas text-body hover:text-ink hover:bg-canvas-soft-2 transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  UPI (PayTM/GPay)
+                </button>
+              </div>
+            </div>
+
+            <!-- Card Inputs Form -->
+            <div id="card-payment-form" class="space-y-4">
+              <div>
+                <label for="card-holder" class="block text-[10px] font-semibold uppercase tracking-wider text-mute mb-1.5">Cardholder Name</label>
+                <input 
+                  type="text" 
+                  id="card-holder" 
+                  placeholder="Jane Smith" 
+                  value="Jane Smith"
+                  class="w-full px-3 py-2.5 bg-canvas border border-hairline rounded-md text-xs text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+                />
+              </div>
+
+              <div>
+                <label for="card-number" class="block text-[10px] font-semibold uppercase tracking-wider text-mute mb-1.5">Card Number</label>
+                <input 
+                  type="text" 
+                  id="card-number" 
+                  placeholder="4111 2222 3333 4444" 
+                  value="4111 2222 3333 4444"
+                  class="w-full px-3 py-2.5 bg-canvas border border-hairline rounded-md text-xs text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="card-expiry" class="block text-[10px] font-semibold uppercase tracking-wider text-mute mb-1.5">Expiration Date</label>
+                  <input 
+                    type="text" 
+                    id="card-expiry" 
+                    placeholder="12/28" 
+                    value="12/28"
+                    class="w-full px-3 py-2.5 bg-canvas border border-hairline rounded-md text-xs text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+                  />
+                </div>
+                <div>
+                  <label for="card-cvv" class="block text-[10px] font-semibold uppercase tracking-wider text-mute mb-1.5">CVV</label>
+                  <input 
+                    type="password" 
+                    id="card-cvv" 
+                    placeholder="123" 
+                    value="123"
+                    class="w-full px-3 py-2.5 bg-canvas border border-hairline rounded-md text-xs text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- UPI Scan Info (Initially Hidden) -->
+            <div id="upi-payment-form" class="hidden space-y-4 text-center py-4 bg-canvas-soft border border-hairline rounded-md">
+              <div class="flex justify-center mb-2">
+                <div class="border border-hairline bg-canvas p-3 rounded">
+                  <!-- Simulated QR code SVG -->
+                  <svg class="h-28 w-28 text-ink" viewBox="0 0 100 100" fill="currentColor">
+                    <path d="M5,5 h20 v20 h-20 z M10,10 h10 v10 h-10 z" />
+                    <path d="M5,75 h20 v20 h-20 z M10,80 h10 v10 h-10 z" />
+                    <path d="M75,5 h20 v20 h-20 z M80,10 h10 v10 h-10 z" />
+                    <path d="M35,15 h10 v10 h-10 z M55,5 h15 v10 h-15 z" />
+                    <path d="M35,45 h20 v10 h-20 z M45,75 h20 v20 h-20 z" />
+                    <path d="M75,55 h10 v15 h-10 z M85,75 h10 v15 h-10 z" />
+                  </svg>
+                </div>
+              </div>
+              <p class="text-xs text-body font-mono">Scan QR code using Paytm / GPay / PhonePe</p>
+              <div class="text-[10px] text-mute uppercase font-mono">UPI ID: pay@grammarlyaihumanizer</div>
+            </div>
+
+            <div id="checkout-error" class="hidden p-3 text-xs bg-error-soft text-error-deep border border-error/20 rounded-md"></div>
+
+            <button type="button" id="pay-submit-btn" class="w-full button-primary py-3.5 text-sm font-semibold rounded-md flex items-center justify-center gap-2">
+              Pay ₹199 & Upgrade Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const payCardBtn = document.getElementById('pay-mode-card');
+  const payUpiBtn = document.getElementById('pay-mode-upi');
+  const cardForm = document.getElementById('card-payment-form');
+  const upiForm = document.getElementById('upi-payment-form');
+  
+  const paySubmitBtn = document.getElementById('pay-submit-btn') as HTMLButtonElement;
+  const successScreen = document.getElementById('payment-success-screen');
+  const checkoutError = document.getElementById('checkout-error');
+
+  let activeMode = 'card'; // 'card' or 'upi'
+
+  // Selector handlers
+  payCardBtn?.addEventListener('click', () => {
+    activeMode = 'card';
+    payCardBtn.className = "py-2.5 px-4 text-xs font-medium rounded-md border border-hairline-strong bg-canvas-soft-2 text-ink transition-colors flex items-center justify-center gap-1.5 cursor-pointer";
+    payUpiBtn!.className = "py-2.5 px-4 text-xs font-medium rounded-md border border-hairline bg-canvas text-body hover:text-ink hover:bg-canvas-soft-2 transition-colors flex items-center justify-center gap-1.5 cursor-pointer";
+    cardForm?.classList.remove('hidden');
+    upiForm?.classList.add('hidden');
+  });
+
+  payUpiBtn?.addEventListener('click', () => {
+    activeMode = 'upi';
+    payUpiBtn.className = "py-2.5 px-4 text-xs font-medium rounded-md border border-hairline-strong bg-canvas-soft-2 text-ink transition-colors flex items-center justify-center gap-1.5 cursor-pointer";
+    payCardBtn!.className = "py-2.5 px-4 text-xs font-medium rounded-md border border-hairline bg-canvas text-body hover:text-ink hover:bg-canvas-soft-2 transition-colors flex items-center justify-center gap-1.5 cursor-pointer";
+    cardForm?.classList.add('hidden');
+    upiForm?.classList.remove('hidden');
+  });
+
+  // Submit Simulated checkout
+  paySubmitBtn?.addEventListener('click', async () => {
+    if (!paySubmitBtn || !successScreen || !checkoutError) return;
+    
+    checkoutError.classList.add('hidden');
+    paySubmitBtn.disabled = true;
+    paySubmitBtn.innerHTML = `
+      <svg class="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Processing simulated payment...
+    `;
+
+    try {
+      // API payload simulator to activate premium status
+      const response = await fetch('/api/auth/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        successScreen.classList.remove('hidden');
+        setTimeout(() => {
+          window.location.href = '/#console';
+        }, 2500);
+      } else {
+        checkoutError.textContent = data.error || 'Payment processing failed.';
+        checkoutError.classList.remove('hidden');
+        paySubmitBtn.disabled = false;
+        paySubmitBtn.textContent = 'Pay ₹199 & Upgrade Account';
+      }
+    } catch (err) {
+      checkoutError.textContent = 'Network or system error occurred. Please try again.';
+      checkoutError.classList.remove('hidden');
+      paySubmitBtn.disabled = false;
+      paySubmitBtn.textContent = 'Pay ₹199 & Upgrade Account';
+    }
+  });
+</script>

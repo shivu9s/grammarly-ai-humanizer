@@ -1,0 +1,134 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Sign In | Grammarly AI Humanizer" description="Sign in to your Grammarly AI Humanizer account.">
+  <Header />
+  <main class="flex-grow flex items-center justify-center py-16 px-4">
+    <div class="w-full max-w-md card-marketing-large">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold tracking-tight text-ink mb-2">Welcome Back</h1>
+        <p class="text-sm text-body">Sign in to your account to resume humanizing.</p>
+      </div>
+
+      <form id="signin-form" class="space-y-5">
+        <div id="status-banner" class="hidden p-3 text-xs rounded-md border"></div>
+        <div id="error-banner" class="hidden p-3 text-xs bg-error-soft text-error-deep border border-error/20 rounded-md"></div>
+
+        <div>
+          <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Username or Email</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            required 
+            placeholder="Username" 
+            class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required 
+            placeholder="••••••••" 
+            class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+          />
+        </div>
+
+        <button type="submit" id="submit-btn" class="w-full button-primary py-3 text-sm font-semibold rounded-md flex items-center justify-center gap-2">
+          Sign In
+        </button>
+      </form>
+
+      <div class="mt-6 text-center border-t border-hairline pt-6">
+        <p class="text-xs text-body">
+          Don't have an account yet? 
+          <a href="/signup/" class="text-link hover:underline font-medium ml-1">Sign Up</a>
+        </p>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const form = document.getElementById('signin-form') as HTMLFormElement;
+  const usernameInput = document.getElementById('username') as HTMLInputElement;
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  const statusBanner = document.getElementById('status-banner');
+  const errorBanner = document.getElementById('error-banner');
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  // Check URL parameters for registered status
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('registered') === 'true' && statusBanner) {
+    statusBanner.textContent = 'Account created successfully! Please sign in.';
+    statusBanner.className = 'p-3 text-xs bg-success/10 text-link-deep border border-link/20 rounded-md';
+    statusBanner.classList.remove('hidden');
+    
+    const registeredUser = urlParams.get('username');
+    if (registeredUser && usernameInput) {
+      usernameInput.value = registeredUser;
+    }
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!errorBanner || !submitBtn || !statusBanner) return;
+
+    errorBanner.classList.add('hidden');
+    statusBanner.classList.add('hidden');
+
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+      <svg class="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Signing In...
+    `;
+
+    try {
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        statusBanner.textContent = 'Login successful! Redirecting...';
+        statusBanner.className = 'p-3 text-xs bg-success/10 text-link-deep border border-link/20 rounded-md';
+        statusBanner.classList.remove('hidden');
+
+        // Check if redirect target exists
+        const redirectUrl = urlParams.get('redirect') || '/';
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 1000);
+      } else {
+        errorBanner.textContent = data.error || 'Login failed.';
+        errorBanner.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+      }
+    } catch (err) {
+      errorBanner.textContent = 'An unexpected error occurred. Please try again.';
+      errorBanner.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign In';
+    }
+  });
+</script>

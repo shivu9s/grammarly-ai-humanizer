@@ -160,13 +160,14 @@
         </div>
 
         <!-- Daily Limit Indicator -->
-        <div id="daily-limit-banner" class="flex items-center justify-between px-4 py-3 bg-canvas border border-hairline rounded-lg text-xs font-medium text-body shadow-xs transition-all duration-200">
+        <div id="daily-limit-banner" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-4 py-3 bg-canvas border border-hairline rounded-lg text-xs font-medium text-body shadow-xs transition-all duration-200">
           <div class="flex items-center gap-2">
             <div id="daily-limit-dot" class="h-2.5 w-2.5 rounded-full bg-success"></div>
             <span class="font-mono text-mute uppercase tracking-wider text-[10px]">Daily humanizations</span>
           </div>
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-3 justify-between sm:justify-end">
             <span id="daily-limit-status" class="font-mono font-bold text-ink">0 / 10 used</span>
+            <a href="/checkout/" id="limit-upgrade-link" class="text-xs font-bold text-success hover:underline">Upgrade to Premium (₹199)</a>
           </div>
         </div>
 
@@ -383,7 +384,7 @@
 
 <script>
   // Dynamic application state
-  const state = {
+  const state: any = {
     mode: 'standard', // standard, advanced, academic, creative
     tab: 'humanizer', // humanizer, detector
     inputWords: 0,
@@ -391,7 +392,8 @@
     history: [],
     currentResponse: null,
     showDiff: true,
-    showHighlights: false
+    showHighlights: false,
+    user: null
   };
 
   // Pre-defined NLP Replacement Thesaurus & Structure Shift rules
@@ -641,8 +643,8 @@
 
   function updateDailyLimitUI() {
     if (!dailyLimitStatus || !dailyLimitDot) return;
-    const count = getDailyHumanizationCount();
-    const limit = 10;
+    const count = state.user ? state.user.used : getDailyHumanizationCount();
+    const limit = state.user ? state.user.limit : 10;
     
     dailyLimitStatus.textContent = `${count} / ${limit} used`;
     
@@ -654,9 +656,9 @@
       if (actionHumanizeBtn) {
         actionHumanizeBtn.disabled = true;
         actionHumanizeBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        actionHumanizeBtn.title = "Daily humanization limit of 10 reached";
+        actionHumanizeBtn.title = `Daily humanization limit of ${limit} reached`;
       }
-    } else if (count >= 7) {
+    } else if (count >= limit * 0.7) {
       dailyLimitDot.className = "h-2.5 w-2.5 rounded-full bg-warning";
       dailyLimitStatus.className = "font-mono font-bold text-warning";
       if (actionHumanizeBtn) {
@@ -671,6 +673,40 @@
         actionHumanizeBtn.disabled = false;
         actionHumanizeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         actionHumanizeBtn.title = "";
+      }
+    }
+
+    // Add info indicator for premium
+    const banner = document.getElementById('daily-limit-banner');
+    if (banner) {
+      let badge = banner.querySelector('.limit-tier-badge');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = "limit-tier-badge ml-2 px-1.5 py-0.5 text-[9px] font-bold rounded-full font-mono";
+        const dotContainer = banner.querySelector('.flex.items-center');
+        if (dotContainer) dotContainer.appendChild(badge);
+      }
+      if (state.user?.loggedIn) {
+        if (state.user.isPremium) {
+          badge.className = "limit-tier-badge ml-2 px-1.5 py-0.5 text-[9px] font-bold bg-success/15 text-success rounded-full font-mono";
+          badge.textContent = "PREMIUM TIER";
+        } else {
+          badge.className = "limit-tier-badge ml-2 px-1.5 py-0.5 text-[9px] font-bold bg-warning/15 text-warning rounded-full font-mono";
+          badge.textContent = "FREE TIER";
+        }
+      } else {
+        badge.className = "limit-tier-badge ml-2 px-1.5 py-0.5 text-[9px] font-bold bg-body/15 text-body rounded-full font-mono";
+        badge.textContent = "ANONYMOUS";
+      }
+    }
+
+    // Toggle upgrade link visibility
+    const upgradeLink = document.getElementById('limit-upgrade-link');
+    if (upgradeLink) {
+      if (state.user?.isPremium) {
+        upgradeLink.classList.add('hidden');
+      } else {
+        upgradeLink.classList.remove('hidden');
       }
     }
   }
@@ -820,16 +856,17 @@
     if (inputWordCountEl) inputWordCountEl.textContent = state.inputWords.toString();
     if (inputCharCountEl) inputCharCountEl.textContent = state.inputChars.toString();
 
+    const activeWordLimit = state.user ? state.user.wordLimit : 300;
     if (wordLimitIndicator) {
       if (state.inputWords < 20) {
         wordLimitIndicator.className = "transition-colors text-warning";
         wordLimitIndicator.textContent = `Words: ${state.inputWords} / 20 min`;
-      } else if (state.inputWords > 300) {
+      } else if (state.inputWords > activeWordLimit) {
         wordLimitIndicator.className = "transition-colors text-error font-semibold";
-        wordLimitIndicator.textContent = `Limit exceeded: ${state.inputWords} / 300 max`;
+        wordLimitIndicator.textContent = `Limit exceeded: ${state.inputWords} / ${activeWordLimit} max`;
       } else {
         wordLimitIndicator.className = "transition-colors text-success";
-        wordLimitIndicator.textContent = `${state.inputWords} / 300 words`;
+        wordLimitIndicator.textContent = `${state.inputWords} / ${activeWordLimit} words`;
       }
     }
   }
@@ -1150,13 +1187,24 @@
       return;
     }
 
-    if (words.length > 300) {
-      showToast('Text exceeds the maximum limit of 300 words. Please shorten your text.', 'error');
+    const activeWordLimit = state.user ? state.user.wordLimit : 300;
+    if (words.length > activeWordLimit) {
+      showToast(`Text exceeds the maximum limit of ${activeWordLimit} words. Please shorten your text.`, 'error');
       return;
     }
 
-    if (shouldHumanize && getDailyHumanizationCount() >= 10) {
-      showToast('Daily humanization limit of 10 reached. Please try again tomorrow.', 'error');
+    const activeUsedCount = state.user ? state.user.used : getDailyHumanizationCount();
+    const activeLimitCount = state.user ? state.user.limit : 10;
+    if (shouldHumanize && activeUsedCount >= activeLimitCount) {
+      if (state.user?.loggedIn) {
+        showToast(`Daily limit of ${activeLimitCount} humanizations reached.`, 'error');
+        if (!state.user.isPremium) {
+          showUpgradeModal();
+        }
+      } else {
+        showToast('Daily limit of 10 humanizations reached. Please sign in or upgrade to Premium.', 'error');
+        showAuthModal();
+      }
       updateDailyLimitUI();
       return;
     }
@@ -1221,7 +1269,19 @@
           const apiData = await apiResponse.json().catch(() => ({}));
           markStep('step-2', 'error');
           markStep('step-3', 'error');
-          forceDailyLimitReached();
+          
+          if (state.user?.loggedIn) {
+            await fetchUserStatus();
+            showToast(apiData.error || 'Daily limit reached. Please upgrade to Premium for more runs.', 'error');
+            if (!state.user.isPremium) {
+              showUpgradeModal();
+            }
+          } else {
+            forceDailyLimitReached();
+            showToast('Daily limit reached. Please sign in or upgrade to Premium.', 'error');
+            showAuthModal();
+          }
+
           // Hide processing card and restore appropriate UI
           if (processingCard) processingCard.classList.add('hidden');
           if (state.currentResponse) {
@@ -1229,7 +1289,6 @@
           } else {
             if (emptyStateCard) emptyStateCard.classList.remove('hidden');
           }
-          showToast(apiData.error || 'Daily humanization limit of 10 reached. Please try again tomorrow.', 'error');
           return;
         }
 
@@ -1360,7 +1419,11 @@
     saveHistoryItem(resultPayload);
 
     if (shouldHumanize) {
-      incrementDailyHumanizationCount();
+      if (state.user?.loggedIn) {
+        await fetchUserStatus();
+      } else {
+        incrementDailyHumanizationCount();
+      }
     }
 
     // Hide loader, show metrics
@@ -1558,9 +1621,45 @@
     });
   }
 
+  // Dialog actions for limit prompts
+  function showAuthModal() {
+    if (confirm("You've reached the daily limit of 10 humanizations. Please sign up or sign in to track your limits and get more runs, or upgrade to Premium for ₹199. Go to Sign In?")) {
+      window.location.href = "/signin/?redirect=/";
+    }
+  }
+
+  function showUpgradeModal() {
+    if (confirm("You've reached the free daily limit of 10 humanizations. Upgrade to Premium for ₹199 to unlock 100 daily humanizations and a 2000-word limit! Go to Checkout?")) {
+      window.location.href = "/checkout/";
+    }
+  }
+
+  async function fetchUserStatus() {
+    try {
+      const res = await fetch('/api/auth/user');
+      const data = await res.json();
+      if (data.loggedIn) {
+        state.user = data;
+      } else {
+        state.user = {
+          loggedIn: false,
+          isPremium: false,
+          limit: 10,
+          used: getDailyHumanizationCount(),
+          remaining: Math.max(0, 10 - getDailyHumanizationCount()),
+          wordLimit: 300
+        };
+      }
+      updateDailyLimitUI();
+      updateCounters();
+    } catch (err) {
+      console.error('Failed to load user status:', err);
+    }
+  }
+
   // Lifecycle boot
   loadHistory();
-  updateDailyLimitUI();
+  fetchUserStatus();
 </script>
 
 <style>
