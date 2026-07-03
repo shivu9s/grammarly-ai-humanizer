@@ -159,6 +159,17 @@
 
         </div>
 
+        <!-- Daily Limit Indicator -->
+        <div id="daily-limit-banner" class="flex items-center justify-between px-4 py-3 bg-canvas border border-hairline rounded-lg text-xs font-medium text-body shadow-xs transition-all duration-200">
+          <div class="flex items-center gap-2">
+            <div id="daily-limit-dot" class="h-2.5 w-2.5 rounded-full bg-success"></div>
+            <span class="font-mono text-mute uppercase tracking-wider text-[10px]">Daily humanizations</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span id="daily-limit-status" class="font-mono font-bold text-ink">0 / 10 used</span>
+          </div>
+        </div>
+
         <!-- Action Button -->
         <div class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
           <button id="action-check-ai" class="button-secondary h-11 text-sm font-semibold flex items-center justify-center cursor-pointer w-full sm:w-auto">
@@ -512,6 +523,9 @@
 
   const actionCheckAi = document.getElementById('action-check-ai');
   const actionHumanize = document.getElementById('action-humanize');
+  const strengthValLabel = document.getElementById('strength-val-label');
+  const dailyLimitDot = document.getElementById('daily-limit-dot');
+  const dailyLimitStatus = document.getElementById('daily-limit-status');
   
   const emptyStateCard = document.getElementById('empty-state-card');
   const processingCard = document.getElementById('processing-card');
@@ -580,6 +594,85 @@
       grade: clampedGrade,
       label: label
     };
+  }
+
+  // Daily limit status helpers
+  function getDailyHumanizationCount(): number {
+    try {
+      const stored = localStorage.getItem('humanize_timestamps');
+      const timestamps = stored ? JSON.parse(stored) : [];
+      const now = Date.now();
+      const oneDayAgo = now - 24 * 60 * 60 * 1000;
+      
+      const active = timestamps.filter((t: number) => t > oneDayAgo);
+      if (active.length !== timestamps.length) {
+        localStorage.setItem('humanize_timestamps', JSON.stringify(active));
+      }
+      return active.length;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function incrementDailyHumanizationCount() {
+    try {
+      const stored = localStorage.getItem('humanize_timestamps');
+      const timestamps = stored ? JSON.parse(stored) : [];
+      timestamps.push(Date.now());
+      localStorage.setItem('humanize_timestamps', JSON.stringify(timestamps));
+      updateDailyLimitUI();
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  function forceDailyLimitReached() {
+    try {
+      const timestamps = [];
+      for (let i = 0; i < 10; i++) {
+        timestamps.push(Date.now());
+      }
+      localStorage.setItem('humanize_timestamps', JSON.stringify(timestamps));
+      updateDailyLimitUI();
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  function updateDailyLimitUI() {
+    if (!dailyLimitStatus || !dailyLimitDot) return;
+    const count = getDailyHumanizationCount();
+    const limit = 10;
+    
+    dailyLimitStatus.textContent = `${count} / ${limit} used`;
+    
+    const actionHumanizeBtn = document.getElementById('action-humanize') as HTMLButtonElement;
+    
+    if (count >= limit) {
+      dailyLimitDot.className = "h-2.5 w-2.5 rounded-full bg-error animate-pulse";
+      dailyLimitStatus.className = "font-mono font-bold text-error animate-pulse";
+      if (actionHumanizeBtn) {
+        actionHumanizeBtn.disabled = true;
+        actionHumanizeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        actionHumanizeBtn.title = "Daily humanization limit of 10 reached";
+      }
+    } else if (count >= 7) {
+      dailyLimitDot.className = "h-2.5 w-2.5 rounded-full bg-warning";
+      dailyLimitStatus.className = "font-mono font-bold text-warning";
+      if (actionHumanizeBtn) {
+        actionHumanizeBtn.disabled = false;
+        actionHumanizeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        actionHumanizeBtn.title = "";
+      }
+    } else {
+      dailyLimitDot.className = "h-2.5 w-2.5 rounded-full bg-success";
+      dailyLimitStatus.className = "font-mono font-bold text-ink";
+      if (actionHumanizeBtn) {
+        actionHumanizeBtn.disabled = false;
+        actionHumanizeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        actionHumanizeBtn.title = "";
+      }
+    }
   }
 
   // Local storage management
@@ -729,13 +822,14 @@
 
     if (wordLimitIndicator) {
       if (state.inputWords < 20) {
-        wordLimitIndicator.classList.remove('text-mute', 'text-success');
-        wordLimitIndicator.classList.add('text-warning');
+        wordLimitIndicator.className = "transition-colors text-warning";
         wordLimitIndicator.textContent = `Words: ${state.inputWords} / 20 min`;
+      } else if (state.inputWords > 300) {
+        wordLimitIndicator.className = "transition-colors text-error font-semibold";
+        wordLimitIndicator.textContent = `Limit exceeded: ${state.inputWords} / 300 max`;
       } else {
-        wordLimitIndicator.classList.remove('text-warning', 'text-mute');
-        wordLimitIndicator.classList.add('text-success');
-        wordLimitIndicator.textContent = "Optimal length reached";
+        wordLimitIndicator.className = "transition-colors text-success";
+        wordLimitIndicator.textContent = `${state.inputWords} / 300 words`;
       }
     }
   }
@@ -1056,6 +1150,17 @@
       return;
     }
 
+    if (words.length > 300) {
+      showToast('Text exceeds the maximum limit of 300 words. Please shorten your text.', 'error');
+      return;
+    }
+
+    if (shouldHumanize && getDailyHumanizationCount() >= 10) {
+      showToast('Daily humanization limit of 10 reached. Please try again tomorrow.', 'error');
+      updateDailyLimitUI();
+      return;
+    }
+
     // Hide views, show loading steps
     if (emptyStateCard) emptyStateCard.classList.add('hidden');
     if (resultsCard) resultsCard.classList.add('hidden');
@@ -1110,6 +1215,38 @@
             language: languageText
           })
         });
+
+        // Check for rate limit status (429) from server
+        if (apiResponse.status === 429) {
+          const apiData = await apiResponse.json().catch(() => ({}));
+          markStep('step-2', 'error');
+          markStep('step-3', 'error');
+          forceDailyLimitReached();
+          // Hide processing card and restore appropriate UI
+          if (processingCard) processingCard.classList.add('hidden');
+          if (state.currentResponse) {
+            if (resultsCard) resultsCard.classList.remove('hidden');
+          } else {
+            if (emptyStateCard) emptyStateCard.classList.remove('hidden');
+          }
+          showToast(apiData.error || 'Daily humanization limit of 10 reached. Please try again tomorrow.', 'error');
+          return;
+        }
+
+        // Check for bad request (400) from server (e.g. word count limit bypassed client)
+        if (apiResponse.status === 400) {
+          const apiData = await apiResponse.json().catch(() => ({}));
+          markStep('step-2', 'error');
+          markStep('step-3', 'error');
+          if (processingCard) processingCard.classList.add('hidden');
+          if (state.currentResponse) {
+            if (resultsCard) resultsCard.classList.remove('hidden');
+          } else {
+            if (emptyStateCard) emptyStateCard.classList.remove('hidden');
+          }
+          showToast(apiData.error || 'Request invalid.', 'error');
+          return;
+        }
 
         markStep('step-2', 'done');
         markStep('step-3', 'active');
@@ -1221,6 +1358,10 @@
     
     // Save to history log
     saveHistoryItem(resultPayload);
+
+    if (shouldHumanize) {
+      incrementDailyHumanizationCount();
+    }
 
     // Hide loader, show metrics
     if (processingCard) processingCard.classList.add('hidden');
@@ -1419,6 +1560,7 @@
 
   // Lifecycle boot
   loadHistory();
+  updateDailyLimitUI();
 </script>
 
 <style>

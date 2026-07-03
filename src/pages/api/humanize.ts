@@ -99,8 +99,67 @@ const STRENGTH_MODIFIERS: Record<string, string> = {
   high: `\n\nREWRITE STRENGTH: AGGRESSIVE. Completely reconstruct every sentence. Change the sentence boundaries, merge or split thoughts, and shuffle paragraph phrasing. Use different vocabulary and syntax models while retaining all facts. The structure must be completely fresh and unrecognizable from the original text.`
 };
 
-export const POST: APIRoute = async ({ request }) => {
+// IP Rate limiting map
+const ipLimits = new Map<string, number[]>();
+
+function checkIpRateLimit(ip: string): { allowed: boolean; count: number } {
+  const now = Date.now();
+  const oneDayAgo = now - 24 * 60 * 60 * 1000;
+  
+  let timestamps = ipLimits.get(ip) || [];
+  // Filter for last 24 hours
+  timestamps = timestamps.filter(t => t > oneDayAgo);
+  
+  if (timestamps.length >= 10) {
+    ipLimits.set(ip, timestamps); // save filtered list
+    return { allowed: false, count: timestamps.length };
+  }
+  
+  timestamps.push(now);
+  ipLimits.set(ip, timestamps);
+  return { allowed: true, count: timestamps.length };
+}
+
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
+    const body = await request.json();
+    const { text, tone = 'professional', strength = 'medium', language = 'english' } = body;
+
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      return new Response(JSON.stringify({ error: 'No text provided' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // 1. Max 300 words check
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    if (words.length > 300) {
+      return new Response(JSON.stringify({ 
+        error: 'Text exceeds the maximum limit of 300 words. Please shorten your text and try again.' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // 2. IP Rate Limiting check
+    const ip = clientAddress || 
+               request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
+               request.headers.get('x-real-ip') || 
+               '127.0.0.1';
+               
+    const rateLimit = checkIpRateLimit(ip);
+    if (!rateLimit.allowed) {
+      return new Response(JSON.stringify({
+        error: 'Daily limit of 10 humanizations reached. Please try again in 24 hours.',
+        limitExceeded: true
+      }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     const apiKey = import.meta.env.GEMINI_API_KEY;
     
     if (!apiKey || apiKey === 'your_gemini_api_key_here') {
@@ -109,16 +168,6 @@ export const POST: APIRoute = async ({ request }) => {
         fallback: true
       }), {
         status: 503,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const body = await request.json();
-    const { text, tone = 'professional', strength = 'medium', language = 'english' } = body;
-
-    if (!text || typeof text !== 'string' || text.trim().length === 0) {
-      return new Response(JSON.stringify({ error: 'No text provided' }), {
-        status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
