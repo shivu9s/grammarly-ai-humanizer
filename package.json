@@ -9,10 +9,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "deploy": "astro build && wrangler deploy --config dist/server/wrangler.json",
+    "preview:wrangler": "astro build && wrangler dev --config dist/server/wrangler.json",
     "typecheck": "astro check && tsc --noEmit",
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.1.1",
     "@astrojs/node": "^11.0.0",
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.110.0",
@@ -22,6 +25,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@types/node": "^26.1.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "wrangler": "^4.107.0"
   }
 }

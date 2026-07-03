@@ -12,11 +12,13 @@ export interface EnvVariables {
 }
 
 export function validateEnv(): EnvVariables {
-  const SUPABASE_URL = (import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL || '').trim();
-  const SUPABASE_ANON_KEY = (import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '').trim();
-  const SUPABASE_SERVICE_ROLE_KEY = (import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
-  const GEMINI_API_KEY = (import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || '').trim();
-  const GROQ_API_KEY = (import.meta.env.GROQ_API_KEY || process.env.GROQ_API_KEY || '').trim();
+  const isProd = import.meta.env.PROD || process.env.NODE_ENV === 'production';
+
+  const SUPABASE_URL = (isProd ? (process.env.SUPABASE_URL || '') : (import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL || '')).trim();
+  const SUPABASE_ANON_KEY = (isProd ? (process.env.SUPABASE_ANON_KEY || '') : (import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '')).trim();
+  const SUPABASE_SERVICE_ROLE_KEY = (isProd ? (process.env.SUPABASE_SERVICE_ROLE_KEY || '') : (import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '')).trim();
+  const GEMINI_API_KEY = (isProd ? (process.env.GEMINI_API_KEY || '') : (import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY || '')).trim();
+  const GROQ_API_KEY = (isProd ? (process.env.GROQ_API_KEY || '') : (import.meta.env.GROQ_API_KEY || process.env.GROQ_API_KEY || '')).trim();
 
   const missing: string[] = [];
 
@@ -30,8 +32,6 @@ export function validateEnv(): EnvVariables {
   if (!hasLLMKey) {
     missing.push('Either GEMINI_API_KEY or GROQ_API_KEY must be configured.');
   }
-
-  const isProd = import.meta.env.PROD || process.env.NODE_ENV === 'production';
 
   if (missing.length > 0) {
     const errorMessage = `[Deployment Error] Missing environment configuration:\n- ${missing.join('\n- ')}\nPlease configure these in your deployment dashboard or local .env file.`;
