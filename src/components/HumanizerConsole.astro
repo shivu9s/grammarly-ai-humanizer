@@ -32,7 +32,7 @@
       <div class="lg:col-span-7 space-y-6">
         
         <!-- Input Card -->
-        <div class="card-marketing card-hover-3d p-6! relative">
+        <div id="input-card-container" class="card-marketing glass-input-premium p-6! relative">
           
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-mono uppercase tracking-wider text-mute">Input AI Text</h3>
@@ -394,6 +394,16 @@
     showDiff: true,
     showHighlights: false,
     user: null
+  };
+
+  const setProcessingState = (active: boolean) => {
+    const container = document.getElementById('input-card-container');
+    if (!container) return;
+    if (active) {
+      container.classList.add('active-processing-glow');
+    } else {
+      container.classList.remove('active-processing-glow');
+    }
   };
 
   // Pre-defined NLP Replacement Thesaurus & Structure Shift rules
@@ -1210,6 +1220,7 @@
     }
 
     // Hide views, show loading steps
+    setProcessingState(true);
     if (emptyStateCard) emptyStateCard.classList.add('hidden');
     if (resultsCard) resultsCard.classList.add('hidden');
     if (processingCard) processingCard.classList.remove('hidden');
@@ -1290,6 +1301,7 @@
           } else {
             if (emptyStateCard) emptyStateCard.classList.remove('hidden');
           }
+          setProcessingState(false);
           return;
         }
 
@@ -1304,6 +1316,7 @@
           } else {
             if (emptyStateCard) emptyStateCard.classList.remove('hidden');
           }
+          setProcessingState(false);
           showToast(apiData.error || 'Request invalid.', 'error');
           return;
         }
@@ -1430,6 +1443,7 @@
     // Hide loader, show metrics
     if (processingCard) processingCard.classList.add('hidden');
     if (resultsCard) resultsCard.classList.remove('hidden');
+    setProcessingState(false);
 
     displayResults(resultPayload);
     
