@@ -1,0 +1,83 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  error: unknown;
+}
+
+const { error } = Astro.props;
+
+// Log error to server console for debugging
+console.error("Internal Server Error (500 Page Triggered):", error);
+
+const errorMessage = error instanceof Error ? error.message : String(error);
+const errorStack = error instanceof Error ? error.stack : '';
+---
+
+<Layout 
+  title="500 Internal Server Error | Grammarly AI Humanizer" 
+  description="An internal server error occurred on Grammarly AI Humanizer."
+>
+  <Header />
+  
+  <main class="flex-grow relative flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
+    <!-- Floating Mesh Background -->
+    <div class="mesh-backdrop"></div>
+    
+    <div class="mx-auto max-w-2xl relative z-10 text-center">
+      <!-- Animated / Glowing Error Badge -->
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono uppercase tracking-widest text-warning bg-warning/10 border border-warning/20 rounded-full mb-6">
+        Error Code: 500
+      </div>
+      
+      <!-- Big Stylized 500 Number -->
+      <h1 class="text-8xl sm:text-9xl font-extrabold tracking-tighter bg-gradient-to-r from-primary via-violet to-warning bg-clip-text text-transparent mb-6 select-none leading-none">
+        500
+      </h1>
+      
+      <!-- Error Message -->
+      <h2 class="text-2xl font-bold tracking-tight text-ink mb-4">
+        Internal Server Error
+      </h2>
+      <p class="text-body text-sm leading-relaxed mb-8 max-w-md mx-auto">
+        Something unexpected went wrong on our end. We've logged the error and our team is working to resolve it. Please try refreshing the page or check back shortly.
+      </p>
+
+      {error && (
+        <div class="mb-8 text-left max-w-lg mx-auto card-soft border border-hairline p-4 rounded-md overflow-hidden bg-canvas/40 backdrop-blur-xs">
+          <details class="group cursor-pointer">
+            <summary class="flex items-center justify-between text-xs font-mono font-semibold text-mute select-none outline-none">
+              <span>View technical details (Developers Only)</span>
+              <svg class="h-4 w-4 transform transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="mt-3 pt-3 border-t border-hairline font-mono text-xs text-error max-h-48 overflow-y-auto whitespace-pre-wrap leading-relaxed select-text">
+              <strong class="block mb-1">{errorMessage}</strong>
+              {errorStack && <span class="opacity-80 text-[11px]">{errorStack}</span>}
+            </div>
+          </details>
+        </div>
+      )}
+      
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <button onclick="window.location.reload()" class="button-primary w-full sm:w-auto shadow-md hover:shadow-lg transition-all duration-200">
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17" />
+          </svg>
+          Refresh Page
+        </button>
+        <a href="/" class="button-secondary w-full sm:w-auto transition-all duration-200">
+          Go Back Home
+        </a>
+      </div>
+    </div>
+  </main>
+  
+  <Footer />
+</Layout>

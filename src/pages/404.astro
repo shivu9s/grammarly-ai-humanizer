@@ -1,0 +1,54 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout 
+  title="404 Page Not Found | Grammarly AI Humanizer" 
+  description="The page you are looking for does not exist on Grammarly AI Humanizer."
+>
+  <Header />
+  
+  <main class="flex-grow relative flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
+    <!-- Floating Mesh Background -->
+    <div class="mesh-backdrop"></div>
+    
+    <div class="mx-auto max-w-md relative z-10 text-center">
+      <!-- Animated / Glowing Error Badge -->
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono uppercase tracking-widest text-highlight-pink bg-highlight-pink/10 border border-highlight-pink/20 rounded-full mb-6">
+        Error Code: 404
+      </div>
+      
+      <!-- Big Stylized 404 Number -->
+      <h1 class="text-8xl sm:text-9xl font-extrabold tracking-tighter bg-gradient-to-r from-primary via-violet to-highlight-pink bg-clip-text text-transparent mb-6 select-none leading-none">
+        404
+      </h1>
+      
+      <!-- Error Message -->
+      <h2 class="text-2xl font-bold tracking-tight text-ink mb-4">
+        Lost in Translation?
+      </h2>
+      <p class="text-body text-sm leading-relaxed mb-8 max-w-sm mx-auto">
+        Oops! The page you are looking for has either vanished into thin air or never existed in the first place. Let's get you back on track.
+      </p>
+      
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="/" class="button-primary w-full sm:w-auto shadow-md hover:shadow-lg transition-all duration-200">
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Go Back Home
+        </a>
+        <a href="/contact-us/" class="button-secondary w-full sm:w-auto transition-all duration-200">
+          Contact Support
+        </a>
+      </div>
+    </div>
+  </main>
+  
+  <Footer />
+</Layout>
