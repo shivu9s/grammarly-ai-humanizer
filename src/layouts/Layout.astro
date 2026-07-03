@@ -21,6 +21,16 @@ const {
 <!doctype html>
 <html lang="en">
 	<head>
+		<!-- Google tag (gtag.js) -->
+		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-XQYV2GT2R2"></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-XQYV2GT2R2');
+		</script>
+
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -34,6 +44,7 @@ const {
 		<meta name="author" content="Grammarly AI Humanizer" />
 		<meta name="robots" content="index, follow" />
 		<link rel="canonical" href={canonicalUrl} />
+		<link rel="sitemap" href="/sitemap.xml" />
 		
 		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
