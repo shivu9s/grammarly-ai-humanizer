@@ -1,0 +1,70 @@
+---
+// Footer.astro
+---
+
+<footer class="w-full bg-canvas border-t border-hairline py-16 transition-colors duration-200">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-8 border-b border-hairline pb-12 mb-12">
+      
+      <!-- Brand column -->
+      <div class="col-span-2 space-y-4">
+        <a href="/" class="flex items-center gap-2 group">
+          <svg class="h-5 w-5 text-primary" viewBox="0 0 75 65" fill="currentColor">
+            <polygon points="37.5,0 75,65 0,65"/>
+          </svg>
+          <span class="font-sans font-semibold tracking-tight text-base text-ink">
+            Grammarly <span class="text-mute font-normal text-xs font-mono tracking-wider bg-canvas-soft-2 px-1.5 py-0.5 rounded border border-hairline">AI</span>
+          </span>
+        </a>
+        <p class="text-xs text-body max-w-xs leading-relaxed">
+          The developer-first AI humanization engine. Elevating pacing, perplexity, and syntax to bypass flags and enhance writing quality.
+        </p>
+      </div>
+
+      <!-- Links Column 1: Product -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-mono uppercase tracking-wider text-mute font-semibold">Product</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="#console" class="text-body hover:text-ink transition-colors">AI Humanizer</a></li>
+          <li><a href="#console" class="text-body hover:text-ink transition-colors">AI Detector</a></li>
+          <li><a href="#features" class="text-body hover:text-ink transition-colors">How it Works</a></li>
+          <li><a href="#faqs" class="text-body hover:text-ink transition-colors">FAQs</a></li>
+        </ul>
+      </div>
+
+      <!-- Links Column 2: Resources -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-mono uppercase tracking-wider text-mute font-semibold">Resources</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="https://docs.astro.build" target="_blank" class="text-body hover:text-ink transition-colors">Documentation</a></li>
+          <li><a href="#features" class="text-body hover:text-ink transition-colors">API References</a></li>
+          <li><a href="#" class="text-body hover:text-ink transition-colors">NLP Research</a></li>
+          <li><a href="#" class="text-body hover:text-ink transition-colors">Status</a></li>
+        </ul>
+      </div>
+
+      <!-- Links Column 3: Legal -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-mono uppercase tracking-wider text-mute font-semibold">Legal</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="#" class="text-body hover:text-ink transition-colors">Privacy Policy</a></li>
+          <li><a href="#" class="text-body hover:text-ink transition-colors">Terms of Service</a></li>
+          <li><a href="#" class="text-body hover:text-ink transition-colors">Cookie Settings</a></li>
+          <li><a href="#" class="text-body hover:text-ink transition-colors">DMCA Policy</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom copyright / meta -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-mute">
+      <p>© 2026 Grammarly AI Humanizer, Inc. All rights reserved.</p>
+      
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-ink transition-colors" aria-label="Twitter">Twitter</a>
+        <a href="#" class="hover:text-ink transition-colors" aria-label="GitHub">GitHub</a>
+        <a href="#" class="hover:text-ink transition-colors" aria-label="Discord">Discord</a>
+      </div>
+    </div>
+  </div>
+</footer>

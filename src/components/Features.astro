@@ -1,0 +1,120 @@
+---
+// Features.astro
+---
+
+<section id="features" class="relative w-full py-20 bg-canvas border-b border-hairline transition-colors duration-200">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="text-xs font-mono uppercase tracking-widest text-link mb-3 inline-block">The Science of Humanization</span>
+      <h2 class="text-3xl sm:text-4xl font-bold tracking-[-1px] text-ink mb-4 leading-tight">
+        Bypass detection by writing like a human.
+      </h2>
+      <p class="text-body text-base sm:text-lg">
+        AI detectors look for specific mathematical signatures in text. Our tool adjusts these signatures dynamically to make your content indistinguishable from human writing.
+      </p>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Feature 1: Perplexity -->
+      <div class="card-marketing space-y-4">
+        <div class="h-10 w-10 rounded-lg bg-link-bg-soft/20 text-link flex items-center justify-center dark:bg-link-bg-soft/10">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold tracking-tight text-ink">Perplexity Optimization</h3>
+        <p class="text-body text-sm leading-relaxed">
+          AI writing relies on highly predictable vocabulary. We replace repetitive, robotic transitions and predictable sequences with rich, contextually diverse synonym replacements.
+        </p>
+      </div>
+
+      <!-- Feature 2: Burstiness -->
+      <div class="card-marketing space-y-4">
+        <div class="h-10 w-10 rounded-lg bg-violet-soft/30 text-violet flex items-center justify-center dark:bg-violet-soft/10">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold tracking-tight text-ink">Sentence Structure & Burstiness</h3>
+        <p class="text-body text-sm leading-relaxed">
+          Robots write sentences of uniform length. Humans write dynamically—mixing short, punchy statements with descriptive, complex ones. Our engine restructures sentence flows for natural pacing.
+        </p>
+      </div>
+
+      <!-- Feature 3: Meaning Preservation -->
+      <div class="card-marketing space-y-4">
+        <div class="h-10 w-10 rounded-lg bg-cyan-soft/30 text-cyan-deep flex items-center justify-center dark:bg-cyan-soft/10">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold tracking-tight text-ink">Context & Meaning Preservation</h3>
+        <p class="text-body text-sm leading-relaxed">
+          Standard paraphrasing tools scramble grammar and change context. Our linguistic processing respects complex definitions, terms of art, and variables—keeping your message 100% intact.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Comparative Table Section (Better than ZeroGPT) -->
+    <div class="mt-20 border border-hairline rounded-lg overflow-hidden bg-canvas-soft shadow-sm">
+      <div class="p-6 bg-canvas border-b border-hairline flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-base font-semibold text-ink">Visual Difference Matrix</h3>
+          <p class="text-xs text-body mt-0.5">How Grammarly AI Humanizer stacks up against legacy detection bypass tools.</p>
+        </div>
+        <span class="text-xs font-mono bg-success/15 text-success px-2.5 py-0.5 rounded border border-success/30 font-medium">99.2% Average Bypass Rating</span>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-canvas-soft-2 text-mute font-mono uppercase border-b border-hairline">
+              <th class="p-4 font-medium">Feature Set</th>
+              <th class="p-4 font-medium text-center">Standard Spinners</th>
+              <th class="p-4 font-medium text-center">ZeroGPT Paraphraser</th>
+              <th class="p-4 font-medium text-center text-ink font-bold bg-canvas/30">Grammarly AI Humanizer</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-hairline">
+            <tr class="hover:bg-canvas/40 transition-colors">
+              <td class="p-4 font-medium text-ink">Sentence Length Variance</td>
+              <td class="p-4 text-center text-error">❌ No</td>
+              <td class="p-4 text-center text-warning">⚠️ Basic</td>
+              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ Advanced (Adaptive)</td>
+            </tr>
+            <tr class="hover:bg-canvas/40 transition-colors">
+              <td class="p-4 font-medium text-ink">Vocabulary Lock (Exclusions)</td>
+              <td class="p-4 text-center text-error">❌ No</td>
+              <td class="p-4 text-center text-error">❌ No</td>
+              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ Complete (Exclusion fields)</td>
+            </tr>
+            <tr class="hover:bg-canvas/40 transition-colors">
+              <td class="p-4 font-medium text-ink">Sentence Explorer Options</td>
+              <td class="p-4 text-center text-error">❌ No</td>
+              <td class="p-4 text-center text-error">❌ No</td>
+              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ Yes (Multi-choice swaps)</td>
+            </tr>
+            <tr class="hover:bg-canvas/40 transition-colors">
+              <td class="p-4 font-medium text-ink">Bypasses Turnitin & GPTZero</td>
+              <td class="p-4 text-center text-error">❌ <10% success</td>
+              <td class="p-4 text-center text-warning">⚠️ 65% success</td>
+              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ >98% success rate</td>
+            </tr>
+            <tr class="hover:bg-canvas/40 transition-colors">
+              <td class="p-4 font-medium text-ink">Readability Insights</td>
+              <td class="p-4 text-center text-error">❌ No</td>
+              <td class="p-4 text-center text-error">❌ No</td>
+              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ Flesch Grade Index</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
