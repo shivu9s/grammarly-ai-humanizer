@@ -541,16 +541,9 @@ html, body {
   66% {
     transform: translate(-20px, 20px) scale(0.95) rotate(240deg);
   }
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.form-input:focus {
-  border-color: var(--hairline-strong);
-  box-shadow: 0 0 0 2px rgba(23, 23, 23, 0.05);
-}
-
-.dark .form-input:focus {
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+  100% {
+    transform: translate(0, 0) scale(1) rotate(360deg);
+  }
 }
 
 /* ===== Mobile Responsive Overrides ===== */
@@ -816,6 +809,7 @@ html, body {
   background-size: 300% 100%;
   animation: processing-border-flow 4s infinite linear;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
