@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import Beams from '../components/Beams.jsx';
 
 interface Props {
 	title?: string;
@@ -73,21 +72,6 @@ const {
 		</script>
 	</head>
 	<body class="text-ink min-h-screen flex flex-col font-sans transition-colors duration-200">
-		<!-- Beams Full-Screen Background -->
-		<div class="aurora-bg-wrapper">
-			<Beams
-				client:only="react"
-				beamWidth={2.5}
-				beamHeight={18}
-				beamNumber={15}
-				lightColor="#b497cf"
-				speed={1.5}
-				noiseIntensity={1.5}
-				scale={0.15}
-				rotation={25}
-			/>
-		</div>
-
 		<div class="flex-grow flex flex-col animate-fade-up" style="position:relative;z-index:1;">
 			<slot />
 		</div>
