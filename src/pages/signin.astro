@@ -4,12 +4,24 @@ export const prerender = false;
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Aurora from '../components/Aurora.jsx';
 ---
 
 <Layout title="Sign In | Grammarly AI Humanizer" description="Sign in to your Grammarly AI Humanizer account.">
   <Header />
-  <main class="flex-grow flex items-center justify-center py-16 px-4">
-    <div class="w-full max-w-md card-marketing-large">
+  <main class="flex-grow flex items-center justify-center py-16 px-4 relative overflow-hidden">
+    <!-- Animated Aurora Background -->
+    <div class="absolute inset-0 z-0 pointer-events-none opacity-20 dark:opacity-35">
+      <Aurora
+        client:only="react"
+        colorStops={["#007cf0", "#7928ca", "#ff0080"]}
+        blend={0.6}
+        amplitude={1.0}
+        speed={0.4}
+      />
+    </div>
+
+    <div class="w-full max-w-md card-marketing-large relative z-10">
       <div class="text-center mb-8">
         <h1 class="text-2xl font-bold tracking-tight text-ink mb-2">Welcome Back</h1>
         <p class="text-sm text-body">Sign in to your account to resume humanizing.</p>
