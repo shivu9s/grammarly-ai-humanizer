@@ -156,29 +156,7 @@
         <!-- Output Dashboard & Metrics Card (Hidden initially) -->
         <div id="results-card" class="hidden space-y-6">
           
-          <!-- Metrics panel -->
-          <div class="card-marketing p-6! space-y-6 bg-canvas">
-            <h3 class="text-sm font-mono uppercase tracking-wider text-mute border-b border-hairline pb-2 mb-2">Linguistic Insights</h3>
-            
-            <div class="grid grid-cols-2 gap-4">
-              <!-- AI Likelihood Before -->
-              <div class="p-3 bg-canvas-soft border border-hairline rounded-lg text-center">
-                <div class="text-xs font-mono uppercase text-mute mb-1">Before AI Likelihood</div>
-                <div id="metric-ai-before" class="text-2xl font-bold text-error">98%</div>
-                <div class="text-[10px] text-mute uppercase font-mono mt-1">Highly Robotic</div>
-              </div>
-              
-              <!-- AI Likelihood After -->
-              <div class="p-3 bg-canvas-soft border border-hairline rounded-lg text-center relative overflow-hidden">
-                <!-- Highlight border pulse -->
-                <div class="absolute inset-0 border border-success/30 rounded-lg animate-pulse"></div>
-                <div class="text-xs font-mono uppercase text-mute mb-1">After AI Likelihood</div>
-                <div id="metric-ai-after" class="text-2xl font-bold text-success">4%</div>
-                <div class="text-[10px] text-success uppercase font-mono mt-1">Undetectable</div>
-              </div>
-            </div>
 
-          </div>
 
           <!-- Humanized Output Display Card -->
           <div class="card-marketing p-6! bg-canvas relative">
@@ -1349,11 +1327,9 @@
 
   // Display results dashboard
   function displayResults(data: any) {
-    if (!metricAiBefore || !metricAiAfter) return;
-
-    // Set metrics visual counters
-    metricAiBefore.textContent = `${data.aiBefore}%`;
-    metricAiAfter.textContent = `${data.aiAfter}%`;
+    // Set metrics visual counters if they exist in DOM
+    if (metricAiBefore) metricAiBefore.textContent = `${data.aiBefore}%`;
+    if (metricAiAfter) metricAiAfter.textContent = `${data.aiAfter}%`;
 
     if (outputWordCountEl) {
       outputWordCountEl.textContent = `Words: ${data.output.split(/\s+/).filter((w: string) => w.trim().length > 0).length}`;
