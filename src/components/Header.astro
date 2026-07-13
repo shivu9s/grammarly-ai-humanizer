@@ -1,5 +1,6 @@
 ---
 // Header.astro
+import GooeyNav from './GooeyNav.jsx';
 ---
 
 <header class="sticky top-0 z-50 w-full border-b border-hairline bg-canvas/80 backdrop-blur-md transition-colors duration-200">
@@ -14,21 +15,26 @@
       </span>
     </a>
 
-    <!-- Nav Links (Desktop) -->
-    <nav class="hidden md:flex items-center gap-6">
-      <a href="/#features" class="text-sm font-normal text-body hover:text-ink transition-colors">Features</a>
-      <a href="/#console" class="text-sm font-normal text-body hover:text-ink transition-colors">Humanizer</a>
-      <a href="/#faqs" class="text-sm font-normal text-body hover:text-ink transition-colors">FAQs</a>
-      <a href="/about-us/" class="text-sm font-normal text-body hover:text-ink transition-colors">About Us</a>
-      <a href="/contact-us/" class="text-sm font-normal text-body hover:text-ink transition-colors">Contact</a>
-      <a href="/checkout/" id="nav-go-premium" class="text-sm font-semibold text-success hover:underline transition-colors mr-2">Go Premium</a>
-      <a href="https://docs.astro.build" target="_blank" rel="noopener noreferrer" class="text-sm font-normal text-body hover:text-ink transition-colors flex items-center gap-1">
-        Docs
-        <svg class="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-        </svg>
-      </a>
-    </nav>
+    <!-- Nav Links (Desktop) - GooeyNav -->
+    <div class="hidden md:flex items-center" style="font-size:14px;">
+      <GooeyNav
+        client:only="react"
+        items={[
+          { label: "Features", href: "/#features" },
+          { label: "Humanizer", href: "/#console" },
+          { label: "FAQs", href: "/#faqs" },
+          { label: "About Us", href: "/about-us/" },
+          { label: "Contact", href: "/contact-us/" },
+        ]}
+        particleCount={15}
+        particleDistances={[90, 10]}
+        particleR={100}
+        initialActiveIndex={0}
+        animationTime={600}
+        timeVariance={300}
+        colors={[1, 2, 3, 1, 2, 3, 1, 4]}
+      />
+    </div>
 
     <!-- Action Buttons -->
     <div class="flex items-center gap-4">
