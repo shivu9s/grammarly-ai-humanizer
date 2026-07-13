@@ -856,3 +856,18 @@ html, body {
   z-index: 0;
   pointer-events: none;
 }
+
+.aurora-global-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.dark .aurora-global-bg {
+  opacity: 0.6;
+}
