@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Aurora from '../components/Aurora.jsx';
+import ClickSpark from '../components/ClickSpark.jsx';
 
 interface Props {
 	title?: string;
@@ -84,9 +85,18 @@ const {
 			/>
 		</div>
 
-		<div class="flex-grow flex flex-col animate-fade-up" style="position:relative;z-index:1;">
-			<slot />
-		</div>
+		<ClickSpark
+			client:only="react"
+			sparkColor="#50e3c2"
+			sparkSize={8}
+			sparkRadius={20}
+			sparkCount={10}
+			duration={500}
+		>
+			<div class="flex-grow flex flex-col animate-fade-up" style="position:relative;z-index:1;">
+				<slot />
+			</div>
+		</ClickSpark>
 
 		<script>
 			// Intersection Observer for scroll-triggered premium reveals
