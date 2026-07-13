@@ -71,89 +71,7 @@
           </div>
         </div>
 
-        <!-- Humanizer Control Parameters Card -->
-        <div id="humanizer-params-card" class="card-marketing card-hover-3d p-4! sm:p-6! space-y-5 sm:space-y-6">
-          <h3 class="text-sm font-mono uppercase tracking-wider text-mute mb-2">Humanizer Parameters</h3>
-          
-          <!-- Mode Selection -->
-          <div>
-            <label class="block text-xs font-semibold text-body mb-2">Mode Selection</label>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <button type="button" data-mode="standard" class="mode-selector-btn py-2 text-xs font-medium rounded-md border border-hairline-strong bg-primary text-on-primary shadow-sm hover:opacity-95 hover:scale-[1.02] transition-all duration-150 cursor-pointer">
-                Standard
-              </button>
-              <button type="button" data-mode="advanced" class="mode-selector-btn py-2 text-xs font-medium rounded-md border border-hairline bg-canvas text-body hover:text-ink hover:bg-canvas-soft-2 hover:scale-[1.02] transition-all duration-150 cursor-pointer">
-                Advanced
-              </button>
-              <button type="button" data-mode="academic" class="mode-selector-btn py-2 text-xs font-medium rounded-md border border-hairline bg-canvas text-body hover:text-ink hover:bg-canvas-soft-2 hover:scale-[1.02] transition-all duration-150 cursor-pointer">
-                Academic
-              </button>
-              <button type="button" data-mode="creative" class="mode-selector-btn py-2 text-xs font-medium rounded-md border border-hairline bg-canvas text-body hover:text-ink hover:bg-canvas-soft-2 hover:scale-[1.02] transition-all duration-150 cursor-pointer">
-                Creative
-              </button>
-            </div>
-          </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <!-- Tone Selection -->
-            <div>
-              <label for="param-tone" class="block text-xs font-semibold text-body mb-2">Writing Tone</label>
-              <select id="param-tone" class="form-input text-xs cursor-pointer">
-                <option value="friendly">Friendly / Conversational</option>
-                <option value="professional" selected>Professional / Clear</option>
-                <option value="academic">Academic / Analytical</option>
-                <option value="casual">Casual / Direct</option>
-                <option value="creative">Creative / Expressive</option>
-              </select>
-            </div>
-
-            <!-- Language Selection -->
-            <div>
-              <label for="param-language" class="block text-xs font-semibold text-body mb-2">Output Language</label>
-              <select id="param-language" class="form-input text-xs cursor-pointer">
-                <option value="english" selected>English</option>
-                <option value="spanish">Spanish (Español)</option>
-                <option value="french">French (Français)</option>
-                <option value="german">German (Deutsch)</option>
-                <option value="italian">Italian (Italiano)</option>
-                <option value="portuguese">Portuguese (Português)</option>
-                <option value="dutch">Dutch (Nederlands)</option>
-                <option value="russian">Russian (Русский)</option>
-                <option value="japanese">Japanese (日本語)</option>
-                <option value="korean">Korean (한국어)</option>
-                <option value="chinese">Chinese (中文)</option>
-                <option value="arabic">Arabic (العربية)</option>
-                <option value="hindi">Hindi (हिन्दी)</option>
-                <option value="urdu">Urdu (اردو)</option>
-                <option value="turkish">Turkish (Türkçe)</option>
-                <option value="indonesian">Indonesian (Bahasa)</option>
-              </select>
-            </div>
-
-            <!-- Strength Slider -->
-            <div>
-              <div class="flex justify-between items-center mb-2">
-                <label for="param-strength" class="text-xs font-semibold text-body">Humanization Strength</label>
-                <span id="strength-val-label" class="text-xs font-mono font-medium text-ink bg-canvas-soft-2 px-1.5 py-0.5 rounded border border-hairline">Medium</span>
-              </div>
-              <div class="flex items-center gap-3 py-2">
-                <span class="text-xs text-mute font-mono">Low</span>
-                <input id="param-strength" type="range" min="1" max="3" value="2" class="w-full h-1 bg-hairline rounded-lg appearance-none cursor-pointer accent-primary" />
-                <span class="text-xs text-mute font-mono">High</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Vocabulary Lock (Excluded Words) -->
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label for="param-exclusions" class="text-xs font-semibold text-body">Vocabulary Lock (Excluded Words)</label>
-              <span class="text-[10px] text-mute font-mono">Comma-separated</span>
-            </div>
-            <input id="param-exclusions" type="text" placeholder="e.g. Grammarly, AI, Quantum, your brand name" class="form-input text-xs" />
-          </div>
-
-        </div>
 
         <!-- Daily Limit Indicator -->
         <div id="daily-limit-banner" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-4 py-3 bg-canvas border border-hairline rounded-lg text-xs font-medium text-body shadow-xs transition-all duration-200 hover:scale-[1.01]">
@@ -1198,11 +1116,11 @@
     if (processingCard) processingCard.classList.remove('hidden');
 
     // Run rewriting engine
-    const strengthVal = parseInt(paramStrength.value);
+    const strengthVal = paramStrength ? parseInt(paramStrength.value) : 2;
     const strengthText = strengthVal === 1 ? 'low' : strengthVal === 2 ? 'medium' : 'high';
-    const toneText = paramTone.value;
+    const toneText = paramTone ? paramTone.value : 'professional';
     const languageText = paramLanguage?.value || 'english';
-    const exclusionsVal = paramExclusions.value;
+    const exclusionsVal = paramExclusions ? paramExclusions.value : '';
 
     // Animate step 1
     const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
