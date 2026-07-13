@@ -150,39 +150,7 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
       });
     }
 
-    // 2. Rate Limiting check based on tier
-    if (loggedInUser) {
-      // Authenticated User count check
-      const rateLimit = await trackUserHumanization(loggedInUser.id);
-      if (!rateLimit.allowed) {
-        return new Response(JSON.stringify({
-          error: `Daily limit of ${rateLimit.maxLimit} humanizations reached. Please try again in 24 hours or upgrade to Premium for higher limits.`,
-          limitExceeded: true,
-          limit: rateLimit.maxLimit
-        }), {
-          status: 429,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
-    } else {
-      // Anonymous IP Rate Limiting check
-      const ip = clientAddress || 
-                 request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
-                 request.headers.get('x-real-ip') || 
-                 '127.0.0.1';
-                 
-      const rateLimit = checkIpRateLimit(ip);
-      if (!rateLimit.allowed) {
-        return new Response(JSON.stringify({
-          error: 'Daily limit of 10 humanizations reached. Please sign up or sign in to track your usage, or upgrade to Premium for higher limits.',
-          limitExceeded: true,
-          limit: 10
-        }), {
-          status: 429,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
-    }
+
 
     const apiKey = import.meta.env.GEMINI_API_KEY;
     

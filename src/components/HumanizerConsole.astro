@@ -73,17 +73,7 @@
 
 
 
-        <!-- Daily Limit Indicator -->
-        <div id="daily-limit-banner" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 px-4 py-3 bg-canvas border border-hairline rounded-lg text-xs font-medium text-body shadow-xs transition-all duration-200 hover:scale-[1.01]">
-          <div class="flex items-center gap-2">
-            <div id="daily-limit-dot" class="h-2.5 w-2.5 rounded-full bg-success animate-pulse"></div>
-            <span class="font-mono text-mute uppercase tracking-wider text-[10px]">Daily humanizations</span>
-          </div>
-          <div class="flex items-center gap-3 justify-between sm:justify-end">
-            <span id="daily-limit-status" class="font-mono font-bold text-ink">0 / 10 used</span>
-            <a href="/checkout/" id="limit-upgrade-link" class="text-xs font-bold text-success hover:underline">Upgrade to Premium (₹199)</a>
-          </div>
-        </div>
+
 
         <!-- Action Button -->
         <div class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
@@ -1069,21 +1059,7 @@
       return;
     }
 
-    const activeUsedCount = state.user ? state.user.used : getDailyHumanizationCount();
-    const activeLimitCount = state.user ? state.user.limit : 10;
-    if (shouldHumanize && activeUsedCount >= activeLimitCount) {
-      if (state.user?.loggedIn) {
-        showToast(`Daily limit of ${activeLimitCount} humanizations reached.`, 'error');
-        if (!state.user.isPremium) {
-          showUpgradeModal();
-        }
-      } else {
-        showToast('Daily limit of 10 humanizations reached. Please sign in or upgrade to Premium.', 'error');
-        showAuthModal();
-      }
-      updateDailyLimitUI();
-      return;
-    }
+
 
     // Hide views, show loading steps
     setProcessingState(true);
