@@ -4,58 +4,69 @@ export const prerender = false;
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ElectricBorder from '../components/ElectricBorder.jsx';
 ---
 
 <Layout title="Sign In | Grammarly AI Humanizer" description="Sign in to your Grammarly AI Humanizer account.">
   <Header />
   <main class="flex-grow flex items-center justify-center pt-28 pb-16 px-4 relative overflow-hidden">
 
-    <div class="w-full max-w-md card-marketing-large relative z-10">
-      <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold tracking-tight text-ink mb-2">Welcome Back</h1>
-        <p class="text-sm text-body">Sign in to your account to resume humanizing.</p>
-      </div>
-
-      <form id="signin-form" class="space-y-5">
-        <div id="status-banner" class="hidden p-3 text-xs rounded-md border"></div>
-        <div id="error-banner" class="hidden p-3 text-xs bg-error-soft text-error-deep border border-error/20 rounded-md"></div>
-
-        <div>
-          <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Username or Email</label>
-          <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            required 
-            placeholder="Username" 
-            class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
-          />
+    <ElectricBorder
+      client:only="react"
+      color="#5227FF"
+      speed={1.0}
+      chaos={0.06}
+      borderRadius={16}
+      className="w-full max-w-md card-marketing-large relative z-10"
+      style={{ border: 'none', boxShadow: 'none' }}
+    >
+      <div class="w-full h-full flex flex-col bg-transparent">
+        <div class="text-center mb-8">
+          <h1 class="text-2xl font-bold tracking-tight text-ink mb-2">Welcome Back</h1>
+          <p class="text-sm text-body">Sign in to your account to resume humanizing.</p>
         </div>
 
-        <div>
-          <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            required 
-            placeholder="••••••••" 
-            class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
-          />
+        <form id="signin-form" class="space-y-5">
+          <div id="status-banner" class="hidden p-3 text-xs rounded-md border"></div>
+          <div id="error-banner" class="hidden p-3 text-xs bg-error-soft text-error-deep border border-error/20 rounded-md"></div>
+
+          <div>
+            <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Username or Email</label>
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              required 
+              placeholder="Username" 
+              class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-mute mb-2">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              required 
+              placeholder="••••••••" 
+              class="w-full px-4 py-3 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+            />
+          </div>
+
+          <button type="submit" id="submit-btn" class="w-full button-primary py-3 text-sm font-semibold rounded-md flex items-center justify-center gap-2">
+            Sign In
+          </button>
+        </form>
+
+        <div class="mt-6 text-center border-t border-hairline pt-6">
+          <p class="text-xs text-body">
+            Don't have an account yet? 
+            <a href="/signup/" class="text-link hover:underline font-medium ml-1">Sign Up</a>
+          </p>
         </div>
-
-        <button type="submit" id="submit-btn" class="w-full button-primary py-3 text-sm font-semibold rounded-md flex items-center justify-center gap-2">
-          Sign In
-        </button>
-      </form>
-
-      <div class="mt-6 text-center border-t border-hairline pt-6">
-        <p class="text-xs text-body">
-          Don't have an account yet? 
-          <a href="/signup/" class="text-link hover:underline font-medium ml-1">Sign Up</a>
-        </p>
       </div>
-    </div>
+    </ElectricBorder>
   </main>
   <Footer />
 </Layout>
