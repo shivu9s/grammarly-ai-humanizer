@@ -87,9 +87,7 @@
 
         <!-- Action Button -->
         <div class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
-          <button id="action-check-ai" class="button-secondary h-11 text-sm font-semibold flex items-center justify-center hover:scale-[1.02] cursor-pointer w-full sm:w-auto">
-            Check AI Score Only
-          </button>
+
           <button id="action-humanize" class="button-primary h-11 text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto shimmer-btn hover:scale-[1.02]">
             <svg class="h-4 w-4 animate-spin text-cyan" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z"/>
@@ -422,7 +420,7 @@
   const paramLanguage = document.getElementById('param-language') as HTMLSelectElement;
   const paramExclusions = document.getElementById('param-exclusions') as HTMLInputElement;
 
-  const actionCheckAi = document.getElementById('action-check-ai');
+
   const actionHumanize = document.getElementById('action-humanize');
   const strengthValLabel = document.getElementById('strength-val-label');
   const dailyLimitDot = document.getElementById('daily-limit-dot');
@@ -1047,7 +1045,7 @@
 
   // UI trigger for check/humanize
   if (actionHumanize) actionHumanize.addEventListener('click', () => processText(true));
-  if (actionCheckAi) actionCheckAi.addEventListener('click', () => processText(false));
+
   if (actionRegenerate) actionRegenerate.addEventListener('click', () => processText(true));
 
   async function processText(shouldHumanize: boolean) {
