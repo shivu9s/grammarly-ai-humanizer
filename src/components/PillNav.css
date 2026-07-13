@@ -43,13 +43,11 @@
 }
 
 .pill-nav-logo {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   object-fit: contain;
   display: block;
-  background: rgba(255, 255, 255, 0.06);
-  padding: 3px;
 }
 
 .pill-nav-brand-text {
