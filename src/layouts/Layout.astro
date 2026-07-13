@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Aurora from '../components/Aurora.jsx';
 
 interface Props {
 	title?: string;
@@ -86,8 +87,19 @@ const {
 			})();
 		</script>
 	</head>
-	<body class="bg-canvas-soft text-ink min-h-screen flex flex-col font-sans transition-colors duration-200">
-		<div class="flex-grow flex flex-col animate-fade-up">
+	<body class="text-ink min-h-screen flex flex-col font-sans transition-colors duration-200">
+		<!-- Aurora Full-Screen Background -->
+		<div class="aurora-bg-wrapper">
+			<Aurora
+				client:only="react"
+				colorStops={["#7cff67","#B497CF","#5227FF"]}
+				blend={0.5}
+				amplitude={1.0}
+				speed={0.5}
+			/>
+		</div>
+
+		<div class="flex-grow flex flex-col animate-fade-up" style="position:relative;z-index:1;">
 			<slot />
 		</div>
 

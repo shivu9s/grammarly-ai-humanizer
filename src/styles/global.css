@@ -93,7 +93,7 @@
   --shadow-level5: 0px 1px 1px rgba(0, 0, 0, 0.1), 0px 8px 16px -4px rgba(0, 0, 0, 0.2), 0px 24px 32px -8px rgba(0, 0, 0, 0.3), 0px 0px 0px 1px rgba(255, 255, 255, 0.08) inset;
 }
 
-html, body {
+html {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -103,6 +103,17 @@ html, body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
 ::selection {
@@ -833,4 +844,15 @@ html, body {
     box-shadow: 0 10px 30px -10px rgba(255, 0, 128, 0.2),
                 0 0 12px 1px rgba(255, 0, 128, 0.1);
   }
+}
+
+/* ===== Aurora Full-Screen Background ===== */
+.aurora-bg-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
 }
