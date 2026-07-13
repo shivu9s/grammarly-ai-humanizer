@@ -29,6 +29,8 @@
 
 .gooey-nav-container {
   position: relative;
+  overflow: hidden;
+  padding: 8px 0;
 }
 
 .gooey-nav-container nav {
@@ -122,9 +124,10 @@
 .gooey-nav-container .effect.filter::before {
   content: '';
   position: absolute;
-  inset: -75px;
+  inset: -15px;
   z-index: -2;
   background: black;
+  border-radius: 100vw;
 }
 
 .gooey-nav-container .effect.filter::after {
