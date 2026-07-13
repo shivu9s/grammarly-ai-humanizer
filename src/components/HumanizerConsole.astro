@@ -58,7 +58,7 @@
 
           <!-- Text Area -->
           <div class="relative">
-            <textarea id="workspace-input" placeholder="Paste your AI-generated text here (at least 20 words for best results)..." class="w-full h-48 sm:h-80 bg-transparent text-ink border-0 focus:ring-0 focus:outline-none resize-none text-sm font-sans placeholder-mute leading-relaxed"></textarea>
+            <textarea id="workspace-input" placeholder="Paste your AI-generated text here (up to 500 words)..." class="w-full h-48 sm:h-80 bg-transparent text-ink border-0 focus:ring-0 focus:outline-none resize-none text-sm font-sans placeholder-mute leading-relaxed"></textarea>
           </div>
 
           <!-- Input Footer Info -->
@@ -67,7 +67,7 @@
               <span>Words: <strong id="input-word-count" class="text-ink">0</strong></span>
               <span>Characters: <strong id="input-char-count" class="text-ink">0</strong></span>
             </div>
-            <span id="word-limit-indicator" class="transition-colors">Min: 20 words</span>
+            <span id="word-limit-indicator" class="transition-colors">Max: 500 words</span>
           </div>
         </div>
 
@@ -753,14 +753,11 @@
     if (inputWordCountEl) inputWordCountEl.textContent = state.inputWords.toString();
     if (inputCharCountEl) inputCharCountEl.textContent = state.inputChars.toString();
 
-    const activeWordLimit = state.user ? state.user.wordLimit : 300;
+    const activeWordLimit = state.user ? state.user.wordLimit : 500;
     if (wordLimitIndicator) {
-      if (state.inputWords < 20) {
-        wordLimitIndicator.className = "transition-colors text-warning";
-        wordLimitIndicator.textContent = `Words: ${state.inputWords} / 20 min`;
-      } else if (state.inputWords > activeWordLimit) {
-        wordLimitIndicator.className = "transition-colors text-error font-semibold";
-        wordLimitIndicator.textContent = `Limit exceeded: ${state.inputWords} / ${activeWordLimit} max`;
+      if (state.inputWords > activeWordLimit) {
+        wordLimitIndicator.className = "transition-colors text-error font-semibold animate-pulse";
+        wordLimitIndicator.textContent = `Limit exceeded: ${state.inputWords} / ${activeWordLimit} max (Premium needed)`;
       } else {
         wordLimitIndicator.className = "transition-colors text-success";
         wordLimitIndicator.textContent = `${state.inputWords} / ${activeWordLimit} words`;
@@ -1058,14 +1055,17 @@
     }
 
     const words = originalText.split(/\s+/).filter(w => w.trim().length > 0);
-    if (words.length < 20) {
-      showToast('Please paste at least 20 words for the engine to accurately scan readability and perplexity.', 'error');
+    if (words.length === 0) {
+      showToast('Please enter or paste some text first.', 'error');
       return;
     }
 
-    const activeWordLimit = state.user ? state.user.wordLimit : 300;
+    const activeWordLimit = state.user ? state.user.wordLimit : 500;
     if (words.length > activeWordLimit) {
-      showToast(`Text exceeds the maximum limit of ${activeWordLimit} words. Please shorten your text.`, 'error');
+      showToast(`Text exceeds the maximum limit of ${activeWordLimit} words. Please upgrade to Premium.`, 'error');
+      if (confirm(`Your text contains ${words.length} words, which exceeds the limit of ${activeWordLimit} words.\n\nWould you like to upgrade to Premium to humanize up to 2,000 words instantly?`)) {
+        window.location.href = "/checkout/";
+      }
       return;
     }
 
@@ -1526,7 +1526,7 @@
           limit: 10,
           used: getDailyHumanizationCount(),
           remaining: Math.max(0, 10 - getDailyHumanizationCount()),
-          wordLimit: 300
+          wordLimit: 500
         };
       }
       updateDailyLimitUI();

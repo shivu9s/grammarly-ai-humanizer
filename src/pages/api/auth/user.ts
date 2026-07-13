@@ -28,7 +28,7 @@ export const GET: APIRoute = async ({ cookies }) => {
       used: count,
       limit: maxLimit,
       remaining: Math.max(0, maxLimit - count),
-      wordLimit: user.isPremium ? 2000 : 300
+      wordLimit: user.isPremium ? 2000 : 500
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

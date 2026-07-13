@@ -137,7 +137,7 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
     const loggedInUser = await getAuthenticatedUser(cookies);
 
     const isPremium = loggedInUser?.isPremium || false;
-    const maxWordLimit = isPremium ? 2000 : 300;
+    const maxWordLimit = isPremium ? 2000 : 500;
 
     // 1. Max word check based on tier
     const words = text.trim().split(/\s+/).filter(w => w.length > 0);
