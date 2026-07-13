@@ -1,196 +1,25 @@
 ---
 // Header.astro
-import GooeyNav from './GooeyNav.jsx';
+import PillNav from './PillNav.jsx';
 ---
 
-<header class="sticky top-0 z-50 w-full transition-colors duration-200">
-  <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-    <!-- Logo -->
-    <a href="/" class="flex items-center gap-2 group">
-      <svg class="h-6 w-6 text-primary transition-transform duration-300 group-hover:scale-110" viewBox="0 0 75 65" fill="currentColor">
-        <polygon points="37.5,0 75,65 0,65"/>
-      </svg>
-      <span class="font-sans font-semibold tracking-tight text-lg text-ink">
-        Grammarly <span class="text-mute font-normal text-sm font-mono tracking-wider bg-canvas-soft-2 px-1.5 py-0.5 rounded border border-hairline">AI</span>
-      </span>
-    </a>
-
-    <!-- Nav Links (Desktop) - GooeyNav -->
-    <div class="hidden md:flex items-center" style="font-size:14px;">
-      <GooeyNav
-        client:only="react"
-        items={[
-          { label: "Features", href: "/#features" },
-          { label: "Humanizer", href: "/#console" },
-          { label: "FAQs", href: "/#faqs" },
-          { label: "About Us", href: "/about-us/" },
-          { label: "Contact", href: "/contact-us/" },
-        ]}
-        particleCount={15}
-        particleDistances={[90, 10]}
-        particleR={100}
-        initialActiveIndex={0}
-        animationTime={600}
-        timeVariance={300}
-        colors={[1, 2, 3, 1, 2, 3, 1, 4]}
-      />
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex items-center gap-4">
-
-      <!-- Desktop Auth Container -->
-      <div id="desktop-auth-container" class="hidden md:flex items-center gap-3"></div>
-
-      <!-- CTA -->
-      <a href="/#console" class="nav-cta-signup hidden sm:inline-flex shadow-sm hover:shadow-md transition-shadow duration-150">
-        Start Humanizing
-      </a>
-      
-      <!-- Mobile Menu Toggle -->
-      <button id="mobile-menu-toggle" class="p-2 md:hidden text-body hover:text-ink cursor-pointer" aria-label="Toggle menu">
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Mobile Menu Dropdown -->
-  <div id="mobile-menu" class="hidden border-b border-hairline bg-canvas transition-all duration-200">
-    <div class="space-y-1 px-4 pt-2 pb-4">
-      <a href="/#features" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">Features</a>
-      <a href="/#console" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">Humanizer</a>
-      <a href="/#faqs" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">FAQs</a>
-      <a href="/about-us/" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">About Us</a>
-      <a href="/contact-us/" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">Contact Us</a>
-      <a href="/checkout/" id="mobile-nav-go-premium" class="block rounded-md px-3 py-2 text-base font-semibold text-success hover:bg-canvas-soft-2 hover:underline">Go Premium (₹199)</a>
-      <a href="/#console" class="block text-center rounded-md bg-primary text-on-primary px-3 py-2.5 mt-4 text-base font-medium shadow-sm hover:opacity-90">Start Humanizing</a>
-      
-      <!-- Mobile Auth Container -->
-      <div id="mobile-auth-container" class="hidden space-y-1 border-t border-hairline pt-3 mt-3"></div>
-    </div>
+<header class="fixed top-0 left-0 right-0 z-50 pt-3 px-4 pointer-events-none">
+  <div class="pointer-events-auto">
+    <PillNav
+      client:only="react"
+      logo="/favicon.svg"
+      logoAlt="AI Humanizer Logo"
+      brandName="AI Humanizer"
+      items={[
+        { label: "Features", href: "/#features" },
+        { label: "Humanizer", href: "/#console" },
+        { label: "FAQs", href: "/#faqs" },
+        { label: "About Us", href: "/about-us/" },
+        { label: "Contact", href: "/contact-us/" },
+      ]}
+      activeHref="/"
+      cta={{ label: "Get Started", href: "/#console" }}
+      initialLoadAnimation={true}
+    />
   </div>
 </header>
-
-<script>
-
-  // Mobile Menu dropdown toggle
-  const mobileToggleBtn = document.getElementById('mobile-menu-toggle');
-  const mobileMenu = document.getElementById('mobile-menu');
-
-  if (mobileToggleBtn && mobileMenu) {
-    mobileToggleBtn.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
-    
-    // Close mobile menu when a link is clicked
-    mobileMenu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        mobileMenu.classList.add('hidden');
-      });
-    });
-  }
-
-  // Dynamic header auth logic
-  async function updateHeaderAuth() {
-    const desktopContainer = document.getElementById('desktop-auth-container');
-    const mobileContainer = document.getElementById('mobile-auth-container');
-    const defaultCta = document.querySelector('.nav-cta-signup');
-    const mobileDefaultCta = document.querySelector('#mobile-menu a[href="/#console"]:last-child');
-    const goPremiumLink = document.getElementById('nav-go-premium');
-    const mobileGoPremiumLink = document.getElementById('mobile-nav-go-premium');
-    
-    try {
-      const response = await fetch('/api/auth/user');
-      const data = await response.json();
-      
-      if (data.loggedIn) {
-        // Hide default CTA
-        if (defaultCta) defaultCta.classList.add('hidden');
-        if (mobileDefaultCta) mobileDefaultCta.classList.add('hidden');
-        
-        // Hide redundant "Go Premium" links from navigation menus when logged in (since we have the Upgrade CTA or Premium status in the account menu)
-        if (goPremiumLink) goPremiumLink.classList.add('hidden');
-        if (mobileGoPremiumLink) mobileGoPremiumLink.classList.add('hidden');
-        
-        const premiumBadge = data.isPremium 
-          ? `<span class="px-2 py-0.5 text-[9px] font-bold text-success bg-success/10 border border-success/20 rounded-full font-mono">PREMIUM</span>` 
-          : `<span class="px-2 py-0.5 text-[9px] font-medium text-body bg-canvas-soft-2 border border-hairline rounded-full font-mono">FREE</span>`;
-          
-        const upgradeBtn = !data.isPremium 
-          ? `<a href="/checkout/" class="px-3 py-1 text-xs font-semibold text-success border border-success/30 hover:border-success rounded-md transition-colors flex items-center">Upgrade</a>` 
-          : '';
-          
-        if (desktopContainer) {
-          desktopContainer.innerHTML = `
-            <div class="flex items-center gap-1.5 mr-1">
-              <span class="text-xs text-mute font-mono">Hi,</span>
-              <span class="text-xs font-semibold text-ink">${data.username}</span>
-              ${premiumBadge}
-            </div>
-            ${upgradeBtn}
-            <button id="signout-btn-desktop" class="px-2.5 py-1 text-xs font-medium text-body hover:text-ink border border-hairline hover:bg-canvas-soft-2 rounded-md transition-colors cursor-pointer">Sign Out</button>
-          `;
-          desktopContainer.classList.remove('hidden');
-          
-          document.getElementById('signout-btn-desktop')?.addEventListener('click', handleSignout);
-        }
-        
-        if (mobileContainer) {
-          mobileContainer.innerHTML = `
-            <div class="px-3 py-2 flex items-center justify-between border-b border-hairline pb-2 mb-2">
-              <div class="flex items-center gap-1.5">
-                <span class="text-sm font-semibold text-ink">${data.username}</span>
-                ${premiumBadge}
-              </div>
-              ${!data.isPremium ? `<a href="/checkout/" class="text-xs font-bold text-success hover:underline">Upgrade to Premium</a>` : ''}
-            </div>
-            <button id="signout-btn-mobile" class="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-error transition-colors cursor-pointer">Sign Out</button>
-          `;
-          mobileContainer.classList.remove('hidden');
-          
-          document.getElementById('signout-btn-mobile')?.addEventListener('click', handleSignout);
-        }
-      } else {
-        // Render signed out actions
-        if (defaultCta) defaultCta.classList.remove('hidden');
-        
-        // Show "Go Premium" links for guest users
-        if (goPremiumLink) goPremiumLink.classList.remove('hidden');
-        if (mobileGoPremiumLink) mobileGoPremiumLink.classList.remove('hidden');
-        
-        if (desktopContainer) {
-          desktopContainer.innerHTML = `
-            <a href="/signin/" class="text-xs font-medium text-body hover:text-ink transition-colors mr-2 flex items-center">Sign In</a>
-            <a href="/signup/" class="px-3 py-1.5 text-xs font-semibold bg-primary text-on-primary rounded-md shadow-xs hover:opacity-90 transition-opacity flex items-center">Sign Up</a>
-          `;
-          desktopContainer.classList.remove('hidden');
-        }
-        
-        if (mobileContainer) {
-          mobileContainer.innerHTML = `
-            <a href="/signin/" class="block rounded-md px-3 py-2 text-base font-medium text-body hover:bg-canvas-soft-2 hover:text-ink">Sign In</a>
-            <a href="/signup/" class="block text-center rounded-md bg-primary text-on-primary px-3 py-2.5 mt-2 text-base font-medium shadow-sm hover:opacity-90">Sign Up</a>
-          `;
-          mobileContainer.classList.remove('hidden');
-        }
-      }
-    } catch (err) {
-      console.error('Error fetching user status in header:', err);
-    }
-  }
-
-  async function handleSignout() {
-    try {
-      const res = await fetch('/api/auth/signout', { method: 'POST' });
-      if (res.ok) {
-        window.location.reload();
-      }
-    } catch (err) {
-      console.error('Signout failed:', err);
-    }
-  }
-
-  updateHeaderAuth();
-</script>
