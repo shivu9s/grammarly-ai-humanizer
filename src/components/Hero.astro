@@ -43,23 +43,70 @@
     <div class="mt-20 border-t border-hairline/60 pt-8 max-w-5xl mx-auto animate-fade-up delay-500">
       <p class="text-xs font-mono uppercase tracking-widest text-mute mb-6">Engineered to bypass major detection models</p>
       
-      <!-- Competitor / Detector list logos (stark, clean) -->
-      <div class="flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-60 dark:opacity-85 grayscale hover:grayscale-0 transition-all duration-300">
-        <!-- GPTZero Logo text -->
-        <span class="font-sans font-semibold text-lg text-ink select-none tracking-tight">GPT<span class="text-mute font-normal">Zero</span></span>
-        
-        <!-- Turnitin Logo text -->
-        <span class="font-sans font-bold text-lg text-ink select-none tracking-tighter">turnitin</span>
-        
-        <!-- Copyleaks Logo text -->
-        <span class="font-mono font-medium text-base text-ink select-none tracking-wide">COPYLEAKS</span>
-        
-        <!-- ZeroGPT Logo text -->
-        <span class="font-sans font-extrabold text-lg text-ink select-none tracking-normal">Zero<span class="text-link font-normal">GPT</span></span>
+      <!-- Infinite Marquee Container with fade gradient mask -->
+      <div class="relative w-full overflow-hidden mask-fade-sides py-2">
+        <div class="flex w-max animate-marquee whitespace-nowrap">
+          <!-- First set of logos -->
+          <div class="flex items-center gap-16 md:gap-24 opacity-60 dark:opacity-85 grayscale hover:grayscale-0 transition-all duration-300 pr-16 md:pr-24">
+            <!-- GPTZero Logo text -->
+            <span class="font-sans font-semibold text-lg text-ink select-none tracking-tight">GPT<span class="text-mute font-normal">Zero</span></span>
+            
+            <!-- Turnitin Logo text -->
+            <span class="font-sans font-bold text-lg text-ink select-none tracking-tighter">turnitin</span>
+            
+            <!-- Copyleaks Logo text -->
+            <span class="font-mono font-medium text-base text-ink select-none tracking-wide">COPYLEAKS</span>
+            
+            <!-- ZeroGPT Logo text -->
+            <span class="font-sans font-extrabold text-lg text-ink select-none tracking-normal">Zero<span class="text-link font-normal">GPT</span></span>
 
-        <!-- Originality AI Logo text -->
-        <span class="font-sans font-semibold text-base text-ink select-none tracking-widest">ORIGINALITY.AI</span>
+            <!-- Originality AI Logo text -->
+            <span class="font-sans font-semibold text-base text-ink select-none tracking-widest">ORIGINALITY.AI</span>
+          </div>
+
+          <!-- Second identical set of logos for seamless loop -->
+          <div class="flex items-center gap-16 md:gap-24 opacity-60 dark:opacity-85 grayscale hover:grayscale-0 transition-all duration-300 pr-16 md:pr-24" aria-hidden="true">
+            <!-- GPTZero Logo text -->
+            <span class="font-sans font-semibold text-lg text-ink select-none tracking-tight">GPT<span class="text-mute font-normal">Zero</span></span>
+            
+            <!-- Turnitin Logo text -->
+            <span class="font-sans font-bold text-lg text-ink select-none tracking-tighter">turnitin</span>
+            
+            <!-- Copyleaks Logo text -->
+            <span class="font-mono font-medium text-base text-ink select-none tracking-wide">COPYLEAKS</span>
+            
+            <!-- ZeroGPT Logo text -->
+            <span class="font-sans font-extrabold text-lg text-ink select-none tracking-normal">Zero<span class="text-link font-normal">GPT</span></span>
+
+            <!-- Originality AI Logo text -->
+            <span class="font-sans font-semibold text-base text-ink select-none tracking-widest">ORIGINALITY.AI</span>
+          </div>
+        </div>
       </div>
     </div>
+
+<style>
+  .mask-fade-sides {
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  }
+
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+</style>
   </div>
 </section>
