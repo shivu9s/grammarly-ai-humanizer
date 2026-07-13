@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import Lightfall from '../components/Lightfall.jsx';
+import Beams from '../components/Beams.jsx';
 
 interface Props {
 	title?: string;
@@ -73,25 +73,18 @@ const {
 		</script>
 	</head>
 	<body class="text-ink min-h-screen flex flex-col font-sans transition-colors duration-200">
-		<!-- Lightfall Full-Screen Background -->
+		<!-- Beams Full-Screen Background -->
 		<div class="aurora-bg-wrapper">
-			<Lightfall
+			<Beams
 				client:only="react"
-				colors={['#7cff67', '#B497CF', '#5227FF', '#FF9FFC', '#0070f3']}
-				backgroundColor="#000000"
-				speed={0.5}
-				streakCount={6}
-				streakWidth={1.5}
-				streakLength={1.2}
-				glow={1.2}
-				density={0.7}
-				twinkle={1.0}
-				zoom={2.5}
-				backgroundGlow={0.3}
-				opacity={0.85}
-				mouseInteraction={true}
-				mouseStrength={0.8}
-				mouseRadius={0.8}
+				beamWidth={2.5}
+				beamHeight={18}
+				beamNumber={15}
+				lightColor="#b497cf"
+				speed={1.5}
+				noiseIntensity={1.5}
+				scale={0.15}
+				rotation={25}
 			/>
 		</div>
 
