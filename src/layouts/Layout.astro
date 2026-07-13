@@ -20,7 +20,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<!-- Google tag (gtag.js) -->
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-XQYV2GT2R2"></script>
@@ -67,24 +67,9 @@ const {
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
 		
-		<!-- Prevent Light/Dark Mode Flash -->
+		<!-- Force Dark Mode -->
 		<script is:inline>
-			(function () {
-				const theme = (function () {
-					if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-						return localStorage.getItem('theme');
-					}
-					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-						return 'dark';
-					}
-					return 'dark';
-				})();
-				if (theme === 'dark') {
-					document.documentElement.classList.add('dark');
-				} else {
-					document.documentElement.classList.remove('dark');
-				}
-			})();
+			document.documentElement.classList.add('dark');
 		</script>
 	</head>
 	<body class="text-ink min-h-screen flex flex-col font-sans transition-colors duration-200">
