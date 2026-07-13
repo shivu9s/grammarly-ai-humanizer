@@ -5,16 +5,12 @@
 <section id="console" class="relative w-full py-8 sm:py-16 bg-transparent border-b border-hairline transition-colors duration-200 reveal-on-scroll">
   <div class="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
     
-    <!-- Workspace Tabs -->
+    <!-- Workspace Title -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 border-b border-hairline pb-4">
-      <div class="flex p-0.5 bg-canvas-soft-2 rounded-full border border-hairline">
-        <button id="tab-btn-humanizer" class="px-5 py-1.5 text-sm font-medium rounded-full bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer hover:scale-[1.02]">
-          AI Humanizer
-        </button>
-        <button id="tab-btn-detector" class="px-5 py-1.5 text-sm font-medium rounded-full text-body hover:text-ink transition-all duration-150 cursor-pointer hover:scale-[1.02]">
-          AI Detector
-        </button>
-      </div>
+      <h2 class="text-lg font-semibold text-ink flex items-center gap-2">
+        <span class="flex h-2 w-2 rounded-full bg-primary"></span>
+        AI Humanizer
+      </h2>
       
       <!-- History Log Toggle -->
       <button id="toggle-history-btn" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-body hover:text-ink bg-canvas hover:bg-canvas-soft-2 border border-hairline rounded-md transition-all hover:scale-[1.02] cursor-pointer">
@@ -517,9 +513,6 @@
   const inputWordCountEl = document.getElementById('input-word-count');
   const inputCharCountEl = document.getElementById('input-char-count');
   const wordLimitIndicator = document.getElementById('word-limit-indicator');
-  
-  const tabHumanizer = document.getElementById('tab-btn-humanizer');
-  const tabDetector = document.getElementById('tab-btn-detector');
   const historyToggleBtn = document.getElementById('toggle-history-btn');
   const historyDrawer = document.getElementById('history-drawer');
   const historyDrawerClose = document.getElementById('history-drawer-close');
@@ -962,28 +955,7 @@
     });
   }
 
-  // Tab selections logic
-  if (tabHumanizer) {
-    tabHumanizer.addEventListener('click', () => {
-      state.tab = 'humanizer';
-      tabHumanizer.className = "px-5 py-1.5 text-sm font-medium rounded-full bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
-      if (tabDetector) tabDetector.className = "px-5 py-1.5 text-sm font-medium rounded-full text-body hover:text-ink transition-all duration-150 cursor-pointer";
-      if (humanizerParamsCard) humanizerParamsCard.classList.remove('hidden');
-      if (actionHumanize) actionHumanize.classList.remove('hidden');
-      if (actionCheckAi) actionCheckAi.textContent = "Check AI Score Only";
-    });
-  }
 
-  if (tabDetector) {
-    tabDetector.addEventListener('click', () => {
-      state.tab = 'detector';
-      if (tabDetector) tabDetector.className = "px-5 py-1.5 text-sm font-medium rounded-full bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
-      if (tabHumanizer) tabHumanizer.className = "px-5 py-1.5 text-sm font-medium rounded-full text-body hover:text-ink transition-all duration-150 cursor-pointer";
-      if (humanizerParamsCard) humanizerParamsCard.classList.add('hidden');
-      if (actionHumanize) actionHumanize.classList.add('hidden');
-      if (actionCheckAi) actionCheckAi.textContent = "Detect AI Likelihood";
-    });
-  }
 
   // Advanced structural paraphraser for complex resume/portfolio text to match ZeroGPT humanization styles
   function advancedStructuralParaphrase(sentence: string, options: any): string {
