@@ -1,7 +1,6 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getAuthenticatedUser, trackUserHumanization } from '../../lib/db';
 
 const HUMANIZE_PROMPTS: Record<string, string> = {
@@ -152,11 +151,11 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
 
 
 
-    const apiKey = import.meta.env.GEMINI_API_KEY;
+    const groqApiKey = (import.meta.env.GROQ_API_KEY || '').trim();
     
-    if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+    if (!groqApiKey || groqApiKey === 'your_groq_api_key_here') {
       return new Response(JSON.stringify({
-        error: 'GEMINI_API_KEY is not configured. Please add your API key to the .env file.',
+        error: 'GROQ_API_KEY is not configured. Please add your API key to the .env file.',
         fallback: true
       }), {
         status: 503,
@@ -178,71 +177,37 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
     let rewrittenText = '';
     let usedModel = '';
 
-    const geminiApiKey = (import.meta.env.GEMINI_API_KEY || '').trim();
-    const groqApiKey = (import.meta.env.GROQ_API_KEY || '').trim();
+    // Call Groq API
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${groqApiKey}`
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            { role: 'system', content: fullPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 1.2,
+          max_tokens: 4096
+        })
+      });
 
-    // 1. Try Gemini first if key exists
-    if (geminiApiKey && geminiApiKey !== 'your_gemini_api_key_here') {
-      try {
-        const genAI = new GoogleGenerativeAI(geminiApiKey);
-        const model = genAI.getGenerativeModel({ 
-          model: 'gemini-2.0-flash',
-          systemInstruction: fullPrompt,
-          generationConfig: {
-            temperature: 1.35,
-            topP: 0.96,
-            topK: 60,
-            maxOutputTokens: 8192,
-          }
-        });
-
-        const result = await model.generateContent([
-          { text: userPrompt }
-        ]);
-
-        const response = result.response;
-        rewrittenText = response.text().trim();
+      if (response.ok) {
+        const data = await response.json();
+        rewrittenText = data.choices?.[0]?.message?.content?.trim() || '';
         if (rewrittenText) {
-          usedModel = 'Gemini 2.0 Flash';
+          usedModel = 'Llama 3.3 70B (Groq)';
         }
-      } catch (geminiError: any) {
-        console.warn('Gemini API call failed, attempting Groq fallback...', geminiError.message || geminiError);
+      } else {
+        const errData = await response.json().catch(() => ({}));
+        console.warn('Groq API returned error status:', response.status, errData);
       }
-    }
-
-    // 2. Try Groq if Gemini failed or key wasn't present, and Groq key exists
-    if (!rewrittenText && groqApiKey && groqApiKey !== 'your_groq_api_key_here') {
-      try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${groqApiKey}`
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-              { role: 'system', content: fullPrompt },
-              { role: 'user', content: userPrompt }
-            ],
-            temperature: 1.2,
-            max_tokens: 4096
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          rewrittenText = data.choices?.[0]?.message?.content?.trim() || '';
-          if (rewrittenText) {
-            usedModel = 'Llama 3.3 70B (Groq)';
-          }
-        } else {
-          const errData = await response.json().catch(() => ({}));
-          console.warn('Groq API returned error status:', response.status, errData);
-        }
-      } catch (groqError: any) {
-        console.warn('Groq API call failed:', groqError.message || groqError);
-      }
+    } catch (groqError: any) {
+      console.warn('Groq API call failed:', groqError.message || groqError);
     }
 
     // =========================================================================
@@ -481,10 +446,10 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
     }
 
     // 4. If both failed, return fallback flag
-    const noKeysConfigured = (!geminiApiKey || geminiApiKey === 'your_gemini_api_key_here') && (!groqApiKey || groqApiKey === 'your_groq_api_key_here');
+    const noKeysConfigured = !groqApiKey || groqApiKey === 'your_groq_api_key_here';
     const errorMsg = noKeysConfigured 
-      ? 'No API keys configured. Please add GEMINI_API_KEY or GROQ_API_KEY to your .env file.'
-      : 'All configured AI APIs exceeded quota or failed. Falling back to local humanizer engine.';
+      ? 'No API keys configured. Please add GROQ_API_KEY to your .env file.'
+      : 'The configured Groq API exceeded quota or failed. Falling back to local humanizer engine.';
 
     return new Response(JSON.stringify({
       error: errorMsg,
