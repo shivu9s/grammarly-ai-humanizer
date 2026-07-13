@@ -7,8 +7,7 @@ const ClickSpark = ({
   sparkCount = 8,
   duration = 400,
   easing = 'ease-out',
-  extraScale = 1.0,
-  children
+  extraScale = 1.0
 }) => {
   const canvasRef = useRef(null);
   const sparksRef = useRef([]);
@@ -18,32 +17,18 @@ const ClickSpark = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const parent = canvas.parentElement;
-    if (!parent) return;
-
-    let resizeTimeout;
-
     const resizeCanvas = () => {
-      const { width, height } = parent.getBoundingClientRect();
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
+      if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       }
     };
 
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(resizeCanvas, 100);
-    };
-
-    const ro = new ResizeObserver(handleResize);
-    ro.observe(parent);
-
+    window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
     return () => {
-      ro.disconnect();
-      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', resizeCanvas);
     };
   }, []);
 
@@ -113,48 +98,46 @@ const ClickSpark = ({
     };
   }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale]);
 
-  const handleClick = e => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  useEffect(() => {
+    const handleGlobalClick = e => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const x = e.clientX;
+      const y = e.clientY;
 
-    const now = performance.now();
-    const newSparks = Array.from({ length: sparkCount }, (_, i) => ({
-      x,
-      y,
-      angle: (2 * Math.PI * i) / sparkCount,
-      startTime: now
-    }));
+      const now = performance.now();
+      const newSparks = Array.from({ length: sparkCount }, (_, i) => ({
+        x,
+        y,
+        angle: (2 * Math.PI * i) / sparkCount,
+        startTime: now
+      }));
 
-    sparksRef.current.push(...newSparks);
-  };
+      sparksRef.current.push(...newSparks);
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => {
+      window.removeEventListener('click', handleGlobalClick);
+    };
+  }, [sparkCount]);
 
   return (
-    <div
+    <canvas
+      ref={canvasRef}
       style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%'
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'block',
+        userSelect: 'none',
+        pointerEvents: 'none',
+        zIndex: 99999
       }}
-      onClick={handleClick}
-    >
-      <canvas
-        ref={canvasRef}
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'block',
-          userSelect: 'none',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          pointerEvents: 'none'
-        }}
-      />
-      {children}
-    </div>
+    />
   );
 };
 

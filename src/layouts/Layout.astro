@@ -92,11 +92,11 @@ const {
 			sparkRadius={20}
 			sparkCount={10}
 			duration={500}
-		>
-			<div class="flex-grow flex flex-col animate-fade-up" style="position:relative;z-index:1;">
-				<slot />
-			</div>
-		</ClickSpark>
+		/>
+
+		<div class="flex-grow flex flex-col animate-fade-up" style="position:relative;z-index:1;">
+			<slot />
+		</div>
 
 		<script>
 			// Intersection Observer for scroll-triggered premium reveals
