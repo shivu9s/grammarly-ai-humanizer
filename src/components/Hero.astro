@@ -1,10 +1,26 @@
 ---
 // Hero.astro
+import Beams from './Beams.jsx';
 ---
 
 <section class="relative w-full overflow-hidden py-20 lg:py-32 border-b border-hairline transition-colors duration-200">
   <!-- Mesh Gradient Background -->
   <div class="mesh-backdrop"></div>
+
+  <!-- Interactive Beams WebGL Background -->
+  <div class="absolute inset-0 z-0 pointer-events-none opacity-30 dark:opacity-50">
+    <Beams
+      client:only="react"
+      beamWidth={2.5}
+      beamHeight={18}
+      beamNumber={14}
+      lightColor="#ffffff"
+      speed={1.5}
+      noiseIntensity={1.5}
+      scale={0.15}
+      rotation={20}
+    />
+  </div>
   
   <!-- Ambient background glow blobs -->
   <div class="ambient-glow-wrapper">
