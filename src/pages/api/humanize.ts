@@ -191,7 +191,7 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
             { role: 'system', content: fullPrompt },
             { role: 'user', content: userPrompt }
           ],
-          temperature: 1.2,
+          temperature: 0.9,
           max_tokens: 4096
         })
       });
@@ -317,7 +317,7 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
         let sentences = para.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 0);
 
         // --- Pass 1: Random synonym substitution ---
-        const swapRate = strength === 'high' ? 0.4 : strength === 'medium' ? 0.25 : 0.12;
+        const swapRate = strength === 'high' ? 0.5 : strength === 'medium' ? 0.42 : 0.28;
         sentences = sentences.map(sent => {
           const words = sent.split(/\b/);
           return words.map(word => {
@@ -337,12 +337,12 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
 
         // --- Pass 2: Random contraction toggling (expand some, contract others) ---
         sentences = sentences.map(sent => {
-          if (Math.random() < 0.3) {
+          if (Math.random() < 0.45) {
             // Randomly expand a contraction
             const rule = expansions[Math.floor(Math.random() * expansions.length)];
             sent = sent.replace(rule[0], rule[1]);
           }
-          if (Math.random() < 0.3) {
+          if (Math.random() < 0.45) {
             // Randomly contract an expansion
             const rule = contractions[Math.floor(Math.random() * contractions.length)];
             sent = sent.replace(rule[0], rule[1]);
@@ -355,7 +355,8 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
           const newSentences: string[] = [];
           sentences.forEach(sent => {
             const wordCount = sent.split(/\s+/).length;
-            if (wordCount > 22 && Math.random() < 0.35) {
+            const splitChance = strength === 'high' ? 0.6 : 0.48;
+            if (wordCount > 22 && Math.random() < splitChance) {
               // Try to split at a comma followed by a conjunction
               const splitPatterns = [', and ', ', but ', ', which ', ', so '];
               let didSplit = false;
@@ -385,10 +386,11 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
         // --- Pass 4: Sentence merging (2 short sentences → 1 compound) ---
         if (strength !== 'low') {
           const mergedSentences: string[] = [];
+          const mergeChance = strength === 'high' ? 0.5 : 0.38;
           for (let i = 0; i < sentences.length; i++) {
             const current = sentences[i];
             const next = sentences[i + 1];
-            if (next && current.split(/\s+/).length < 8 && next.split(/\s+/).length < 10 && Math.random() < 0.25) {
+            if (next && current.split(/\s+/).length < 8 && next.split(/\s+/).length < 10 && Math.random() < mergeChance) {
               const connectors = [' — ', '; ', ', and '];
               const connector = connectors[Math.floor(Math.random() * connectors.length)];
               let merged = current.replace(/[.!?]$/, '') + connector + next.charAt(0).toLowerCase() + next.slice(1);
@@ -401,11 +403,12 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
           sentences = mergedSentences;
         }
 
-        // --- Pass 5: Insert mid-sentence filler (very sparingly, ~10% of sentences) ---
+        // --- Pass 5: Insert mid-sentence filler (very sparingly, ~10-20% of sentences) ---
         if (strength !== 'low') {
           sentences = sentences.map(sent => {
             const words = sent.split(/\s+/);
-            if (words.length > 12 && Math.random() < 0.1) {
+            const fillerChance = strength === 'high' ? 0.25 : 0.18;
+            if (words.length > 12 && Math.random() < fillerChance) {
               const insertPos = Math.floor(words.length * 0.4) + Math.floor(Math.random() * 3);
               const filler = midSentenceFillers[Math.floor(Math.random() * midSentenceFillers.length)];
               words.splice(insertPos, 0, filler);
@@ -416,7 +419,8 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
         }
 
         // --- Pass 6: Prepend a sentence starter to one sentence per paragraph ---
-        if (strength !== 'low' && sentences.length > 3 && Math.random() < 0.3) {
+        const starterChance = strength === 'high' ? 0.5 : 0.42;
+        if (strength !== 'low' && sentences.length > 3 && Math.random() < starterChance) {
           const targetIdx = 1 + Math.floor(Math.random() * (sentences.length - 2));
           const starter = sentenceStarters[Math.floor(Math.random() * sentenceStarters.length)];
           const sent = sentences[targetIdx];
