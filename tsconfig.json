@@ -1,11 +1,9 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ESNext", "DOM"],
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
