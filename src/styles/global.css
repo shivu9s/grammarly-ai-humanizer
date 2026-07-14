@@ -435,15 +435,19 @@ body {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
 }
 
-/* ===== Mobile Responsive Overrides ===== */
+/* =========================================================
+   MOBILE RESPONSIVE OVERRIDES
+   ========================================================= */
 
-/* Prevent horizontal overflow */
+/* Prevent horizontal overflow globally */
 html, body {
   overflow-x: hidden;
 }
 
-/* Tighter card padding on mobile */
+/* ---------- Small screens (< 640px / sm breakpoint) ---------- */
 @media (max-width: 639px) {
+
+  /* Tighter card padding */
   .card-marketing {
     padding: 16px;
   }
@@ -453,18 +457,105 @@ html, body {
   .card-soft {
     padding: 16px;
   }
+
+  /* Buttons: bigger touch targets */
   .button-primary,
   .button-secondary {
     font-size: 14px;
-    padding: 10px 18px;
+    padding: 12px 18px;
+    min-height: 44px; /* Apple HIG touch target */
   }
+
+  /* Form inputs */
   .form-input {
-    height: 36px;
-    font-size: 13px;
+    height: 40px;
+    font-size: 14px;
     padding: 0 12px;
   }
+
+  /* Mesh backdrop smaller */
   .mesh-backdrop {
-    height: 280px;
+    height: 220px;
+  }
+
+  /* Ambient blobs smaller on mobile */
+  .blob-primary {
+    width: 200px;
+    height: 200px;
+  }
+  .blob-secondary {
+    width: 220px;
+    height: 220px;
+  }
+  .blob-tertiary {
+    width: 160px;
+    height: 160px;
+  }
+
+  /* Disable 3D card hover on touch devices */
+  .card-hover-3d:hover {
+    transform: none;
+  }
+
+  /* Section padding reduction */
+  section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  /* Matrix comparison table: card-based layout on small screens */
+  .matrix-card table {
+    font-size: 11px;
+  }
+  .matrix-card th,
+  .matrix-card td {
+    padding: 10px 6px;
+  }
+  .matrix-card thead th {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+
+  /* Matrix ambient orb smaller */
+  .matrix-ambient-orb {
+    width: 180px;
+    height: 180px;
+  }
+
+  /* Processing card text */
+  .processing-pulse {
+    padding: 20px !important;
+  }
+
+  /* Aurora background: lower opacity on mobile for readability */
+  .aurora-global-bg {
+    opacity: 0.3;
+  }
+  .dark .aurora-global-bg {
+    opacity: 0.4;
+  }
+}
+
+/* ---------- Medium screens (< 768px / md breakpoint) ---------- */
+@media (max-width: 767px) {
+
+  /* Footer: stack all columns vertically */
+  footer .grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+  }
+  footer .col-span-2 {
+    grid-column: span 1;
+  }
+
+  /* Comparison table: allow horizontal scroll if needed */
+  .matrix-card .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hero section adjustments */
+  .hero-marquee-gap {
+    gap: 32px;
   }
 }
 
@@ -623,125 +714,9 @@ html, body {
   }
 }
 
-/* ===== Mobile Responsive Overrides ===== */
+/* (Duplicate animation block removed — see primary block above) */
 
-/* Prevent horizontal overflow */
-html, body {
-  overflow-x: hidden;
-}
 
-/* Tighter card padding on mobile */
-@media (max-width: 639px) {
-  .card-marketing {
-    padding: 16px;
-  }
-  .card-marketing-large {
-    padding: 20px;
-  }
-  .card-soft {
-    padding: 16px;
-  }
-  .button-primary,
-  .button-secondary {
-    font-size: 14px;
-    padding: 10px 18px;
-  }
-  .form-input {
-    height: 36px;
-    font-size: 13px;
-    padding: 0 12px;
-  }
-  .mesh-backdrop {
-    height: 280px;
-  }
-}
-
-/* ===== Premium Interactive Animations ===== */
-
-/* Page Fade-In/Up Entry */
-.animate-fade-up {
-  opacity: 0;
-  transform: translateY(16px);
-  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Staggered Delay Helpers */
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-500 { animation-delay: 500ms; }
-
-/* Scroll-triggered reveal styles */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(24px) scale(0.98);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
-              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
-}
-
-.reveal-on-scroll.is-visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* Interactive Card 3D Lift */
-.card-hover-3d {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-hover-3d:hover {
-  transform: translateY(-6px) scale(1.01) rotateX(1deg) rotateY(-1deg);
-  border-color: rgba(121, 40, 202, 0.4);
-  box-shadow: 0 20px 40px -15px rgba(121, 40, 202, 0.15), 
-              0 0 0 1px rgba(121, 40, 202, 0.1) inset,
-              var(--shadow-level5);
-}
-
-.dark .card-hover-3d:hover {
-  box-shadow: 0 20px 40px -15px rgba(121, 40, 202, 0.3), 
-              0 0 0 1px rgba(255, 255, 255, 0.15) inset;
-}
-
-/* Shimmer Effect for Primary CTA Buttons */
-.shimmer-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer-btn::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 45%,
-    rgba(255, 255, 255, 0.1) 48%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0.1) 52%,
-    transparent 55%
-  );
-  transform: rotate(-45deg);
-  transition: none;
-  animation: shimmer 6s infinite linear;
-}
-
-@keyframes shimmer {
-  0% { transform: translate(-30%, -30%) rotate(-45deg); }
-  20%, 100% { transform: translate(30%, 30%) rotate(-45deg); }
-}
 
 /* Pulsing Ambient Background Blobs */
 .ambient-glow-wrapper {
