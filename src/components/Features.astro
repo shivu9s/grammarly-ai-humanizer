@@ -98,58 +98,66 @@ import ElectricBorder from './ElectricBorder.jsx';
     </div>
 
     <!-- Comparative Table Section (Better than ZeroGPT) -->
-    <div class="mt-20 border border-hairline rounded-lg overflow-hidden bg-canvas-soft shadow-sm reveal-on-scroll">
-      <div class="p-6 bg-canvas border-b border-hairline flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h3 class="text-base font-semibold text-ink">Visual Difference Matrix</h3>
-          <p class="text-xs text-body mt-0.5">How Grammarly AI Humanizer stacks up against legacy detection bypass tools.</p>
+    <div class="mt-20 relative reveal-on-scroll">
+      <!-- Ambient floating orb behind the card -->
+      <div class="matrix-ambient-orb"></div>
+
+      <div class="matrix-card">
+        <!-- Scanner beam overlay -->
+        <div class="matrix-scanner-beam"></div>
+
+        <div class="p-6 bg-canvas border-b border-hairline flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+          <div>
+            <h3 class="text-base font-semibold text-ink">Visual Difference Matrix</h3>
+            <p class="text-xs text-body mt-0.5">How Grammarly AI Humanizer stacks up against legacy detection bypass tools.</p>
+          </div>
+          <span class="matrix-badge">99.2% Average Bypass Rating</span>
         </div>
-        <span class="text-xs font-mono bg-success/15 text-success px-2.5 py-0.5 rounded border border-success/30 font-medium">99.2% Average Bypass Rating</span>
-      </div>
-      
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr class="bg-canvas-soft-2 text-mute font-mono uppercase border-b border-hairline">
-              <th class="p-4 font-medium">Feature Set</th>
-              <th class="p-4 font-medium text-center">Standard Spinners</th>
-              <th class="p-4 font-medium text-center">ZeroGPT Paraphraser</th>
-              <th class="p-4 font-medium text-center text-ink font-bold bg-canvas/30">Grammarly AI Humanizer</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-hairline">
-            <tr class="hover:bg-canvas/40 transition-colors">
-              <td class="p-4 font-medium text-ink">Sentence Length Variance</td>
-              <td class="p-4 text-center text-error">❌ No</td>
-              <td class="p-4 text-center text-warning">⚠️ Basic</td>
-              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ Advanced (Adaptive)</td>
-            </tr>
-            <tr class="hover:bg-canvas/40 transition-colors">
-              <td class="p-4 font-medium text-ink">Vocabulary Lock (Exclusions)</td>
-              <td class="p-4 text-center text-error">❌ No</td>
-              <td class="p-4 text-center text-error">❌ No</td>
-              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ Complete (Exclusion fields)</td>
-            </tr>
-            <tr class="hover:bg-canvas/40 transition-colors">
-              <td class="p-4 font-medium text-ink">Sentence Explorer Options</td>
-              <td class="p-4 text-center text-error">❌ No</td>
-              <td class="p-4 text-center text-error">❌ No</td>
-              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ Yes (Multi-choice swaps)</td>
-            </tr>
-            <tr class="hover:bg-canvas/40 transition-colors">
-              <td class="p-4 font-medium text-ink">Bypasses Turnitin & GPTZero</td>
-              <td class="p-4 text-center text-error">❌ &lt;10% success</td>
-              <td class="p-4 text-center text-warning">⚠️ 65% success</td>
-              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ >98% success rate</td>
-            </tr>
-            <tr class="hover:bg-canvas/40 transition-colors">
-              <td class="p-4 font-medium text-ink">Readability Insights</td>
-              <td class="p-4 text-center text-error">❌ No</td>
-              <td class="p-4 text-center text-error">❌ No</td>
-              <td class="p-4 text-center text-success font-semibold bg-canvas/30">✅ Flesch Grade Index</td>
-            </tr>
-          </tbody>
-        </table>
+        
+        <div class="overflow-x-auto relative z-10">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-canvas-soft-2 text-mute font-mono uppercase border-b border-hairline">
+                <th class="p-4 font-medium">Feature Set</th>
+                <th class="p-4 font-medium text-center">Standard Spinners</th>
+                <th class="p-4 font-medium text-center">ZeroGPT Paraphraser</th>
+                <th class="p-4 font-medium text-center text-ink font-bold bg-canvas/30">Grammarly AI Humanizer</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-hairline">
+              <tr class="matrix-row" style="--row-index: 0">
+                <td class="p-4 font-medium text-ink">Sentence Length Variance</td>
+                <td class="p-4 text-center text-error">❌ No</td>
+                <td class="p-4 text-center text-warning">⚠️ Basic</td>
+                <td class="p-4 text-center text-success font-semibold matrix-glow-cell">✅ Advanced (Adaptive)</td>
+              </tr>
+              <tr class="matrix-row" style="--row-index: 1">
+                <td class="p-4 font-medium text-ink">Vocabulary Lock (Exclusions)</td>
+                <td class="p-4 text-center text-error">❌ No</td>
+                <td class="p-4 text-center text-error">❌ No</td>
+                <td class="p-4 text-center text-success font-semibold matrix-glow-cell">✅ Complete (Exclusion fields)</td>
+              </tr>
+              <tr class="matrix-row" style="--row-index: 2">
+                <td class="p-4 font-medium text-ink">Sentence Explorer Options</td>
+                <td class="p-4 text-center text-error">❌ No</td>
+                <td class="p-4 text-center text-error">❌ No</td>
+                <td class="p-4 text-center text-success font-semibold matrix-glow-cell">✅ Yes (Multi-choice swaps)</td>
+              </tr>
+              <tr class="matrix-row" style="--row-index: 3">
+                <td class="p-4 font-medium text-ink">Bypasses Turnitin & GPTZero</td>
+                <td class="p-4 text-center text-error">❌ &lt;10% success</td>
+                <td class="p-4 text-center text-warning">⚠️ 65% success</td>
+                <td class="p-4 text-center text-success font-semibold matrix-glow-cell">✅ >98% success rate</td>
+              </tr>
+              <tr class="matrix-row" style="--row-index: 4">
+                <td class="p-4 font-medium text-ink">Readability Insights</td>
+                <td class="p-4 text-center text-error">❌ No</td>
+                <td class="p-4 text-center text-error">❌ No</td>
+                <td class="p-4 text-center text-success font-semibold matrix-glow-cell">✅ Flesch Grade Index</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 

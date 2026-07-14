@@ -992,3 +992,188 @@ html, body {
     @apply font-sans;
   }
 }
+
+/* ======================================================
+   Visual Difference Matrix – Scanner Animation System
+   ====================================================== */
+
+/* Ambient floating orb behind the card */
+.matrix-ambient-orb {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 112, 243, 0.12) 0%, rgba(121, 40, 202, 0.06) 50%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  animation: matrix-orb-drift 8s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes matrix-orb-drift {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  33% { transform: translate(-45%, -55%) scale(1.08); opacity: 0.8; }
+  66% { transform: translate(-55%, -45%) scale(0.95); opacity: 0.5; }
+}
+
+/* Main card container */
+.matrix-card {
+  position: relative;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+  background-color: var(--canvas-soft);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 1;
+}
+
+.matrix-card:hover {
+  border-color: rgba(0, 112, 243, 0.35);
+  box-shadow:
+    0 4px 24px rgba(0, 112, 243, 0.08),
+    0 0 0 1px rgba(0, 112, 243, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Scanner beam – a diagonal light that sweeps across on hover */
+.matrix-scanner-beam {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.matrix-scanner-beam::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -60%;
+  width: 40%;
+  height: 300%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(0, 112, 243, 0.04) 42%,
+    rgba(0, 112, 243, 0.08) 48%,
+    rgba(121, 40, 202, 0.06) 52%,
+    rgba(0, 112, 243, 0.04) 58%,
+    transparent 65%,
+    transparent 100%
+  );
+  transform: rotate(15deg);
+  animation: none;
+}
+
+.matrix-card:hover .matrix-scanner-beam {
+  opacity: 1;
+}
+
+.matrix-card:hover .matrix-scanner-beam::before {
+  animation: matrix-scan-sweep 2.5s ease-in-out infinite;
+}
+
+@keyframes matrix-scan-sweep {
+  0% { left: -60%; }
+  100% { left: 140%; }
+}
+
+/* Badge with subtle pulse */
+.matrix-badge {
+  font-size: 0.75rem;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+  background: rgba(0, 112, 243, 0.1);
+  color: var(--success);
+  padding: 2px 10px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid rgba(0, 112, 243, 0.2);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.matrix-card:hover .matrix-badge {
+  animation: matrix-badge-pulse 2s ease-in-out infinite;
+  background: rgba(0, 112, 243, 0.15);
+  border-color: rgba(0, 112, 243, 0.4);
+}
+
+@keyframes matrix-badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 112, 243, 0.15); }
+  50% { box-shadow: 0 0 12px 2px rgba(0, 112, 243, 0.2); }
+}
+
+/* Table rows – staggered highlight on hover */
+.matrix-row {
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.matrix-card:hover .matrix-row {
+  animation: matrix-row-reveal 0.5s ease forwards;
+  animation-delay: calc(var(--row-index, 0) * 0.12s + 0.15s);
+  opacity: 0.7;
+}
+
+@keyframes matrix-row-reveal {
+  0% { opacity: 0.7; background-color: transparent; }
+  50% { opacity: 1; background-color: rgba(0, 112, 243, 0.03); }
+  100% { opacity: 1; background-color: transparent; }
+}
+
+/* Grammarly column cells – sequential glow on hover */
+.matrix-glow-cell {
+  position: relative;
+  background: rgba(0, 112, 243, 0.03);
+  transition: all 0.3s ease;
+}
+
+.matrix-card:hover .matrix-row .matrix-glow-cell {
+  animation: matrix-cell-glow 0.6s ease forwards;
+  animation-delay: calc(var(--row-index, 0) * 0.15s + 0.3s);
+}
+
+@keyframes matrix-cell-glow {
+  0% {
+    background: rgba(0, 112, 243, 0.03);
+    text-shadow: none;
+  }
+  40% {
+    background: rgba(0, 112, 243, 0.08);
+    text-shadow: 0 0 8px rgba(0, 112, 243, 0.3);
+  }
+  100% {
+    background: rgba(0, 112, 243, 0.04);
+    text-shadow: 0 0 4px rgba(0, 112, 243, 0.12);
+  }
+}
+
+/* Row hover micro-interaction (individual row) */
+.matrix-row:hover {
+  background-color: rgba(0, 112, 243, 0.03) !important;
+}
+
+.matrix-row:hover .matrix-glow-cell {
+  background: rgba(0, 112, 243, 0.07) !important;
+  text-shadow: 0 0 6px rgba(0, 112, 243, 0.2);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .matrix-ambient-orb,
+  .matrix-scanner-beam::before,
+  .matrix-badge,
+  .matrix-row,
+  .matrix-glow-cell {
+    animation: none !important;
+  }
+  .matrix-card:hover {
+    transform: none;
+  }
+}
