@@ -1,4 +1,4 @@
-name = "grammarly-ai-humanizer"
+name = "grammarlyaihumanizer"
 compatibility_date = "2026-07-03"
 compatibility_flags = [ "nodejs_compat", "nodejs_compat_populate_process_env" ]
 

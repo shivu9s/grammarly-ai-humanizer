@@ -4,7 +4,7 @@ A professional, undetectable AI-to-human text humanizer tool built with **Astro 
 
 This application transforms AI-generated content (from ChatGPT, Gemini, Claude, etc.) into natural, human-like writing that easily bypasses major AI detectors (such as Turnitin, GPTZero, and Copyleaks) while preserving the original meaning.
 
-🌐 **Live URL:** [https://grammarly-ai-humanizer.oniic.workers.dev](https://grammarly-ai-humanizer.oniic.workers.dev)
+🌐 **Live URL:** [https://grammarlyaihumanizer.oniic.workers.dev](https://grammarlyaihumanizer.oniic.workers.dev)
 
 ---
 
