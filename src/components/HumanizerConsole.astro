@@ -693,18 +693,20 @@ import ElectricBorder from './ElectricBorder.jsx';
   // Sidebar Drawer Controls
   function openHistoryDrawer() {
     if (historyDrawer && historyDrawerBackdrop) {
+      const backdrop = historyDrawerBackdrop;
       historyDrawer.classList.remove('translate-x-full');
-      historyDrawerBackdrop.classList.remove('hidden');
-      setTimeout(() => historyDrawerBackdrop.classList.add('opacity-100'), 10);
+      backdrop.classList.remove('hidden');
+      setTimeout(() => backdrop.classList.add('opacity-100'), 10);
     }
   }
 
   // Close History Drawer
   function closeHistoryDrawer() {
     if (historyDrawer && historyDrawerBackdrop) {
+      const backdrop = historyDrawerBackdrop;
       historyDrawer.classList.add('translate-x-full');
-      historyDrawerBackdrop.classList.remove('opacity-100');
-      setTimeout(() => historyDrawerBackdrop.classList.add('hidden'), 300);
+      backdrop.classList.remove('opacity-100');
+      setTimeout(() => backdrop.classList.add('hidden'), 300);
     }
   }
 
@@ -1238,9 +1240,10 @@ import ElectricBorder from './ElectricBorder.jsx';
   // Format and print humanized text container
   function renderOutputText() {
     if (!humanizedTextContainer || !state.currentResponse) return;
+    const container = humanizedTextContainer;
     
     const data = state.currentResponse;
-    humanizedTextContainer.innerHTML = '';
+    container.innerHTML = '';
     
     // Group back sentences into paragraphs
     // Simple helper: check sentence ID structure 'sent-paraIndex-sentIndex'
@@ -1282,16 +1285,17 @@ import ElectricBorder from './ElectricBorder.jsx';
         p.appendChild(span);
       });
 
-      humanizedTextContainer.appendChild(p);
+      container.appendChild(p);
     });
   }
 
   // Sentence Explorer Detail cards triggers
   function openSentenceExplorer(sentenceObj: any) {
     if (!sentenceExplorerCard || !sentenceExplorerOriginal || !sentenceExplorerOptions) return;
+    const card = sentenceExplorerCard;
     
     sentenceExplorerOriginal.textContent = sentenceObj.original;
-    sentenceExplorerCard.classList.remove('hidden');
+    card.classList.remove('hidden');
 
     // Create 3 realistic sentence alternatives based on mode
     const modeAlternatives = (MOCK_ALTERNATIVES as any)[state.mode] || MOCK_ALTERNATIVES.standard;
@@ -1315,7 +1319,7 @@ import ElectricBorder from './ElectricBorder.jsx';
             
             // Re-render and hide explorer
             renderOutputText();
-            sentenceExplorerCard.classList.add('hidden');
+            card.classList.add('hidden');
             showToast('Sentence text updated', 'success');
           }
         }
@@ -1519,19 +1523,21 @@ import ElectricBorder from './ElectricBorder.jsx';
     });
 
     if (toggleDiffBtn && toggleHighlightsBtn) {
-      toggleDiffBtn.addEventListener('click', () => {
+      const diffBtn = toggleDiffBtn;
+      const highlightsBtn = toggleHighlightsBtn;
+      diffBtn.addEventListener('click', () => {
         state.showDiff = true;
         state.showHighlights = false;
-        toggleDiffBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
-        toggleHighlightsBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded text-mute hover:text-ink transition-all duration-150 cursor-pointer";
+        diffBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
+        highlightsBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded text-mute hover:text-ink transition-all duration-150 cursor-pointer";
         renderOutputText();
       });
 
-      toggleHighlightsBtn.addEventListener('click', () => {
+      highlightsBtn.addEventListener('click', () => {
         state.showDiff = false;
         state.showHighlights = true;
-        toggleHighlightsBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
-        toggleDiffBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded text-mute hover:text-ink transition-all duration-150 cursor-pointer";
+        highlightsBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
+        diffBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded text-mute hover:text-ink transition-all duration-150 cursor-pointer";
         renderOutputText();
       });
     }
