@@ -23,4 +23,18 @@ export const POST: APIRoute = async ({ cookies }) => {
     });
   }
 };
-export const GET = POST; // Allow simple GET request redirects to signout as well
+export const GET: APIRoute = async ({ cookies, redirect }) => {
+  try {
+    // Log out from Supabase Auth
+    await supabase.auth.signOut();
+  } catch (e) {
+    // ignore
+  }
+
+  // Remove token cookies
+  cookies.delete('sb-access-token', { path: '/' });
+  cookies.delete('sb-refresh-token', { path: '/' });
+
+  return redirect('/');
+};
+

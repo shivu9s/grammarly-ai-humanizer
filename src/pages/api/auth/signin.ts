@@ -30,10 +30,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     // Set cookie session parameters
+    const secure = request.url.startsWith('https:');
     cookies.set('sb-access-token', data.session.access_token, {
       path: '/',
       httpOnly: true,
-      secure: false, // allow localhost http testing
+      secure,
       maxAge: 7 * 24 * 60 * 60,
       sameSite: 'lax'
     });
@@ -41,7 +42,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     cookies.set('sb-refresh-token', data.session.refresh_token, {
       path: '/',
       httpOnly: true,
-      secure: false,
+      secure,
       maxAge: 7 * 24 * 60 * 60,
       sameSite: 'lax'
     });

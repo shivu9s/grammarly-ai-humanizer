@@ -14,11 +14,27 @@ const PillNav = ({
   initialLoadAnimation = true
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const logoImgRef = useRef(null);
   const logoTweenRef = useRef(null);
   const hamburgerRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const navRef = useRef(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/auth/user');
+        const data = await res.json();
+        if (data.loggedIn) {
+          setUser(data);
+        }
+      } catch (err) {
+        console.error('Failed to load user status in PillNav:', err);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const menu = mobileMenuRef.current;
@@ -130,11 +146,20 @@ const PillNav = ({
           ))}
         </ul>
 
-        {/* CTA button */}
-        {cta && (
-          <a className="pill-nav-cta desktop-only" href={cta.href}>
-            {cta.label}
-          </a>
+        {/* CTA button or User status */}
+        {user ? (
+          <div className="pill-nav-user-container desktop-only">
+            <span className="pill-nav-username">{user.username}</span>
+            <a className="pill-nav-cta" href="/api/auth/signout">
+              Sign Out
+            </a>
+          </div>
+        ) : (
+          cta && (
+            <a className="pill-nav-cta desktop-only" href={cta.href}>
+              {cta.label}
+            </a>
+          )
         )}
 
         {/* Mobile hamburger */}
@@ -163,16 +188,33 @@ const PillNav = ({
               </a>
             </li>
           ))}
-          {cta && (
-            <li>
-              <a
-                href={cta.href}
-                className="pill-nav-mobile-cta"
-                onClick={closeMobileMenu}
-              >
-                {cta.label}
-              </a>
-            </li>
+          {user ? (
+            <>
+              <li>
+                <span className="pill-nav-mobile-username">Signed in as: {user.username}</span>
+              </li>
+              <li>
+                <a
+                  href="/api/auth/signout"
+                  className="pill-nav-mobile-cta"
+                  onClick={closeMobileMenu}
+                >
+                  Sign Out
+                </a>
+              </li>
+            </>
+          ) : (
+            cta && (
+              <li>
+                <a
+                  href={cta.href}
+                  className="pill-nav-mobile-cta"
+                  onClick={closeMobileMenu}
+                >
+                  {cta.label}
+                </a>
+              </li>
+            )
           )}
         </ul>
       </div>

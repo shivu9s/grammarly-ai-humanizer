@@ -9,12 +9,15 @@ import Features from '../components/Features.astro';
 import FAQ from '../components/FAQ.astro';
 import SeoContent from '../components/SeoContent.astro';
 import Footer from '../components/Footer.astro';
+import { getAuthenticatedUser } from '../lib/db';
+
+const user = await getAuthenticatedUser(Astro.cookies);
 ---
 
 <Layout>
 	<Header />
 	<main class="flex-grow">
-		<Hero />
+		<Hero user={user} />
 		<HumanizerConsole />
 		<Features />
 		<FAQ />

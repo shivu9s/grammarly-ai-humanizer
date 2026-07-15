@@ -120,7 +120,7 @@ function checkIpRateLimit(ip: string): { allowed: boolean; count: number } {
   return { allowed: true, count: timestamps.length };
 }
 
-export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
     const body = await request.json();
     const { text, tone = 'professional', strength = 'medium', language = 'english' } = body;
@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({ request, clientAddress, cookies }) => {
     }
 
     // Retrieve authenticated user from cookies
-    const loggedInUser = await getAuthenticatedUser(cookies);
+    const loggedInUser = await getAuthenticatedUser(cookies, request);
 
     const isPremium = loggedInUser?.isPremium || false;
     const maxWordLimit = isPremium ? 2000 : 500;

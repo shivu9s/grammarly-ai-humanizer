@@ -14,10 +14,7 @@ if (!user) {
   return Astro.redirect('/signin/?redirect=/checkout/');
 }
 
-// If user is already premium, redirect back to home with message
-if (user.isPremium) {
-  return Astro.redirect('/#console');
-}
+const isPremium = user.isPremium;
 ---
 
 <Layout title="Premium Upgrade | Grammarly AI Humanizer" description="Upgrade to Grammarly AI Humanizer Premium for 199 RS. Unlock 100 daily humanizations and a 2000-word limit.">
@@ -71,38 +68,120 @@ if (user.isPremium) {
 
         <!-- Checkout Form (Right column on desktop) -->
         <div class="md:col-span-7 space-y-6">
-          <div class="card-marketing bg-canvas p-6! space-y-6 relative overflow-hidden" id="checkout-container">
-            <!-- Simulated Payment Success Overlay (Initially Hidden) -->
-            <div id="payment-success-screen" class="hidden absolute inset-0 bg-canvas flex flex-col justify-center items-center text-center p-6 z-10 animate-fade-in">
+          {isPremium ? (
+            <div class="card-marketing bg-canvas p-6! space-y-6 relative overflow-hidden flex flex-col justify-center items-center text-center py-12">
               <div class="p-4 rounded-full bg-success/10 text-success border border-success/20 mb-4 animate-bounce">
                 <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 class="text-xl font-bold text-ink mb-1">Upgrade Successful!</h3>
-              <p class="text-sm text-body mb-6">Welcome to Grammarly AI Humanizer Premium.</p>
-              <div class="text-xs text-mute font-mono">Redirecting you to the console...</div>
+              <h3 class="text-xl font-bold text-ink mb-1">Premium Active ✓</h3>
+              <p class="text-sm text-body mb-6">Welcome to Grammarly AI Humanizer Premium. Your account has already been upgraded.</p>
+              <a href="/#console" class="button-primary text-sm font-semibold py-2 px-6">
+                Go to Humanizer Console
+              </a>
             </div>
-
-            <h3 class="text-sm font-mono uppercase tracking-wider text-mute border-b border-hairline pb-2">Order Summary</h3>
-
-            <div class="space-y-4 py-2">
-              <div class="flex justify-between items-center text-xs text-body">
-                <span>Grammarly AI Humanizer Premium (One-time)</span>
-                <span class="font-semibold text-ink">₹199.00</span>
+          ) : (
+            <div class="card-marketing bg-canvas p-6! space-y-6 relative overflow-hidden" id="checkout-container">
+              <!-- Simulated Payment Success Overlay (Initially Hidden) -->
+              <div id="payment-success-screen" class="hidden absolute inset-0 bg-canvas flex flex-col justify-center items-center text-center p-6 z-10 animate-fade-in">
+                <div class="p-4 rounded-full bg-success/10 text-success border border-success/20 mb-4 animate-bounce">
+                  <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-ink mb-1">Upgrade Successful!</h3>
+                <p class="text-sm text-body mb-6">Welcome to Grammarly AI Humanizer Premium.</p>
+                <div class="text-xs text-mute font-mono">Redirecting you to the console...</div>
               </div>
-              <div class="flex justify-between items-center text-xs text-body border-t border-hairline pt-3">
-                <span class="font-medium text-ink">Total Amount</span>
-                <span class="text-base font-bold text-success">₹199.00</span>
+
+              <h3 class="text-sm font-mono uppercase tracking-wider text-mute border-b border-hairline pb-2">Order Summary</h3>
+
+              <div class="space-y-4 py-2">
+                <div class="flex justify-between items-center text-xs text-body">
+                  <span>Grammarly AI Humanizer Premium (One-time)</span>
+                  <span class="font-semibold text-ink">₹199.00</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-body border-t border-hairline pt-3">
+                  <span class="font-medium text-ink">Total Amount</span>
+                  <span class="text-base font-bold text-success">₹199.00</span>
+                </div>
               </div>
+
+              <!-- Card Details Form Section -->
+              <div class="space-y-4 pt-4 border-t border-hairline">
+                <h4 class="text-xs font-mono uppercase tracking-wider text-mute">Payment Details</h4>
+                
+                <div class="space-y-3">
+                  <div>
+                    <label for="card-name" class="block text-[10px] font-semibold uppercase tracking-wider text-mute mb-1">Cardholder Name</label>
+                    <input 
+                      type="text" 
+                      id="card-name" 
+                      name="card-name" 
+                      required 
+                      placeholder="e.g. John Doe" 
+                      class="w-full px-4 py-2.5 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label for="card-number" class="block text-[10px] font-semibold uppercase tracking-wider text-mute mb-1">Card Number</label>
+                    <div class="relative">
+                      <input 
+                        type="text" 
+                        id="card-number" 
+                        name="card-number" 
+                        required 
+                        maxlength="19"
+                        placeholder="4111 1111 1111 1111" 
+                        class="w-full pl-4 pr-10 py-2.5 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors font-mono"
+                      />
+                      <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-mute">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                          <rect width="20" height="14" x="2" y="5" rx="2"/>
+                          <path d="M2 10h20"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label for="card-expiry" class="block text-[10px] font-semibold uppercase tracking-wider text-mute mb-1">Expiration Date</label>
+                      <input 
+                        type="text" 
+                        id="card-expiry" 
+                        name="card-expiry" 
+                        required 
+                        maxlength="5"
+                        placeholder="MM/YY" 
+                        class="w-full px-4 py-2.5 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label for="card-cvc" class="block text-[10px] font-semibold uppercase tracking-wider text-mute mb-1">CVC</label>
+                      <input 
+                        type="text" 
+                        id="card-cvc" 
+                        name="card-cvc" 
+                        required 
+                        maxlength="4"
+                        placeholder="123" 
+                        class="w-full px-4 py-2.5 bg-canvas border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-hairline-strong transition-colors font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="checkout-error" class="hidden p-3 text-xs bg-error-soft text-error-deep border border-error/20 rounded-md"></div>
+
+              <button type="button" id="pay-submit-btn" class="w-full button-primary py-3.5 text-sm font-semibold rounded-md flex items-center justify-center gap-2">
+                Pay ₹199 & Upgrade Account
+              </button>
             </div>
-
-            <div id="checkout-error" class="hidden p-3 text-xs bg-error-soft text-error-deep border border-error/20 rounded-md"></div>
-
-            <button type="button" id="pay-submit-btn" class="w-full button-primary py-3.5 text-sm font-semibold rounded-md flex items-center justify-center gap-2">
-              Pay ₹199 & Upgrade Account
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -115,11 +194,79 @@ if (user.isPremium) {
   const successScreen = document.getElementById('payment-success-screen');
   const checkoutError = document.getElementById('checkout-error');
 
+  const cardNameInput = document.getElementById('card-name') as HTMLInputElement;
+  const cardNumberInput = document.getElementById('card-number') as HTMLInputElement;
+  const cardExpiryInput = document.getElementById('card-expiry') as HTMLInputElement;
+  const cardCvcInput = document.getElementById('card-cvc') as HTMLInputElement;
+
+  // Auto-format card inputs
+  cardNumberInput?.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement;
+    let value = target.value.replace(/\D/g, '');
+    value = value.substring(0, 16);
+    const matches = value.match(/.{1,4}/g);
+    target.value = matches ? matches.join(' ') : value;
+  });
+
+  cardExpiryInput?.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement;
+    let value = target.value.replace(/\D/g, '');
+    value = value.substring(0, 4);
+    if (value.length > 2) {
+      target.value = `${value.substring(0, 2)}/${value.substring(2)}`;
+    } else {
+      target.value = value;
+    }
+  });
+
+  cardCvcInput?.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement;
+    let value = target.value.replace(/\D/g, '');
+    target.value = value.substring(0, 4);
+  });
+
   // Submit Simulated checkout
   paySubmitBtn?.addEventListener('click', async () => {
     if (!paySubmitBtn || !successScreen || !checkoutError) return;
     
     checkoutError.classList.add('hidden');
+
+    // Perform validation
+    const nameVal = cardNameInput?.value.trim();
+    const numberVal = cardNumberInput?.value.replace(/\s+/g, '');
+    const expiryVal = cardExpiryInput?.value.trim();
+    const cvcVal = cardCvcInput?.value.trim();
+
+    if (!nameVal) {
+      showError('Please enter the cardholder name.');
+      return;
+    }
+    if (!numberVal || numberVal.length !== 16 || !/^\d+$/.test(numberVal)) {
+      showError('Please enter a valid 16-digit card number.');
+      return;
+    }
+    if (!expiryVal || !/^\d{2}\/\d{2}$/.test(expiryVal)) {
+      showError('Please enter a valid expiration date (MM/YY).');
+      return;
+    }
+    const [mmStr, yyStr] = expiryVal.split('/');
+    const mm = parseInt(mmStr, 10);
+    const yy = parseInt(yyStr, 10) + 2000;
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    if (mm < 1 || mm > 12) {
+      showError('Please enter a valid expiry month.');
+      return;
+    }
+    if (yy < currentYear || (yy === currentYear && mm < currentMonth)) {
+      showError('The card has expired.');
+      return;
+    }
+    if (!cvcVal || cvcVal.length < 3 || cvcVal.length > 4 || !/^\d+$/.test(cvcVal)) {
+      showError('Please enter a valid CVC.');
+      return;
+    }
+
     paySubmitBtn.disabled = true;
     paySubmitBtn.innerHTML = `
       <svg class="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
@@ -133,7 +280,13 @@ if (user.isPremium) {
       // API payload simulator to activate premium status
       const response = await fetch('/api/auth/pay', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cardName: nameVal,
+          cardNumber: numberVal,
+          cardExpiry: expiryVal,
+          cardCvc: cvcVal
+        })
       });
 
       const data = await response.json();
@@ -156,4 +309,11 @@ if (user.isPremium) {
       paySubmitBtn.textContent = 'Pay ₹199 & Upgrade Account';
     }
   });
+
+  function showError(msg: string) {
+    if (checkoutError) {
+      checkoutError.textContent = msg;
+      checkoutError.classList.remove('hidden');
+    }
+  }
 </script>

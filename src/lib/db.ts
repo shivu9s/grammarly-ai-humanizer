@@ -38,7 +38,7 @@ export function hashPassword(password: string): string {
 }
 
 // Get the currently authenticated user from cookies, handling session refresh
-export async function getAuthenticatedUser(cookies: any): Promise<User | null> {
+export async function getAuthenticatedUser(cookies: any, request?: Request): Promise<User | null> {
   const accessToken = cookies.get('sb-access-token')?.value;
   const refreshToken = cookies.get('sb-refresh-token')?.value;
 
@@ -60,17 +60,18 @@ export async function getAuthenticatedUser(cookies: any): Promise<User | null> {
 
     // If session was renewed (e.g. token refreshed), update the cookies
     if (data.session) {
+      const secure = request ? request.url.startsWith('https:') : import.meta.env.PROD;
       cookies.set('sb-access-token', data.session.access_token, {
         path: '/',
         httpOnly: true,
-        secure: false, // allow localhost http testing
+        secure,
         maxAge: 7 * 24 * 60 * 60,
         sameSite: 'lax'
       });
       cookies.set('sb-refresh-token', data.session.refresh_token, {
         path: '/',
         httpOnly: true,
-        secure: false,
+        secure,
         maxAge: 7 * 24 * 60 * 60,
         sameSite: 'lax'
       });

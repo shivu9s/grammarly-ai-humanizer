@@ -534,6 +534,12 @@ html, body {
   .dark .aurora-global-bg {
     opacity: 0.4;
   }
+
+  /* Hero section adjustments for mobile header spacing */
+  .hero-section {
+    padding-top: 7rem;
+    padding-bottom: 5rem;
+  }
 }
 
 /* ---------- Medium screens (< 768px / md breakpoint) ---------- */

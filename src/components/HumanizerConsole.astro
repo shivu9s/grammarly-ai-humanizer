@@ -52,13 +52,6 @@ import ElectricBorder from './ElectricBorder.jsx';
                     </svg>
                     Paste
                   </button>
-                  <label for="file-upload" class="flex items-center gap-1 px-2.5 py-1 text-xs text-body hover:text-ink hover:bg-canvas-soft-2 rounded border border-hairline transition-all hover:scale-[1.02] cursor-pointer" title="Upload document">
-                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                    Upload
-                  </label>
-                  <input id="file-upload" type="file" accept=".txt" class="hidden" />
                   <button id="action-clear" class="p-1 text-body hover:text-error hover:bg-canvas-soft-2 rounded transition-all hover:scale-[1.05] cursor-pointer" title="Clear text">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -416,57 +409,55 @@ import ElectricBorder from './ElectricBorder.jsx';
     ]
   };
 
-  // Initializing Elements
-  const inputEl = document.getElementById('workspace-input') as HTMLTextAreaElement;
-  const inputWordCountEl = document.getElementById('input-word-count');
-  const inputCharCountEl = document.getElementById('input-char-count');
-  const wordLimitIndicator = document.getElementById('word-limit-indicator');
-  const historyToggleBtn = document.getElementById('toggle-history-btn');
-  const historyDrawer = document.getElementById('history-drawer');
-  const historyDrawerClose = document.getElementById('history-drawer-close');
-  const historyDrawerBackdrop = document.getElementById('history-drawer-backdrop');
-  const historyItemsContainer = document.getElementById('history-items-container');
-  const historyClearAllBtn = document.getElementById('history-clear-all');
+  // Declaring DOM Element variables to be initialized when React finishes rendering
+  let inputEl: HTMLTextAreaElement | null = null;
+  let inputWordCountEl: HTMLElement | null = null;
+  let inputCharCountEl: HTMLElement | null = null;
+  let wordLimitIndicator: HTMLElement | null = null;
+  let historyToggleBtn: HTMLElement | null = null;
+  let historyDrawer: HTMLElement | null = null;
+  let historyDrawerClose: HTMLElement | null = null;
+  let historyDrawerBackdrop: HTMLElement | null = null;
+  let historyItemsContainer: HTMLElement | null = null;
+  let historyClearAllBtn: HTMLElement | null = null;
 
-  const humanizerParamsCard = document.getElementById('humanizer-params-card');
-  const paramStrength = document.getElementById('param-strength') as HTMLInputElement;
-  const paramTone = document.getElementById('param-tone') as HTMLSelectElement;
-  const paramLanguage = document.getElementById('param-language') as HTMLSelectElement;
-  const paramExclusions = document.getElementById('param-exclusions') as HTMLInputElement;
+  let humanizerParamsCard: HTMLElement | null = null;
+  let paramStrength: HTMLInputElement | null = null;
+  let paramTone: HTMLSelectElement | null = null;
+  let paramLanguage: HTMLSelectElement | null = null;
+  let paramExclusions: HTMLInputElement | null = null;
 
-
-  const actionHumanize = document.getElementById('action-humanize');
-  const strengthValLabel = document.getElementById('strength-val-label');
-  const dailyLimitDot = document.getElementById('daily-limit-dot');
-  const dailyLimitStatus = document.getElementById('daily-limit-status');
+  let actionHumanize: HTMLElement | null = null;
+  let strengthValLabel: HTMLElement | null = null;
+  let dailyLimitDot: HTMLElement | null = null;
+  let dailyLimitStatus: HTMLElement | null = null;
   
-  const emptyStateCard = document.getElementById('empty-state-card');
-  const processingCard = document.getElementById('processing-card');
-  const resultsCard = document.getElementById('results-card');
+  let emptyStateCard: HTMLElement | null = null;
+  let processingCard: HTMLElement | null = null;
+  let resultsCard: HTMLElement | null = null;
 
   // Metrics El
-  const metricAiBefore = document.getElementById('metric-ai-before');
-  const metricAiAfter = document.getElementById('metric-ai-after');
-
+  let metricAiBefore: HTMLElement | null = null;
+  let metricAiAfter: HTMLElement | null = null;
 
   // Output El
-  const humanizedTextContainer = document.getElementById('humanized-text-container');
-  const outputWordCountEl = document.getElementById('output-word-count');
-  const toggleDiffBtn = document.getElementById('toggle-diff');
-  const toggleHighlightsBtn = document.getElementById('toggle-highlights');
+  let humanizedTextContainer: HTMLElement | null = null;
+  let outputWordCountEl: HTMLElement | null = null;
+  let toggleDiffBtn: HTMLElement | null = null;
+  let toggleHighlightsBtn: HTMLElement | null = null;
   
-  const sentenceExplorerCard = document.getElementById('sentence-explorer-card');
-  const sentenceExplorerClose = document.getElementById('sentence-explorer-close');
-  const sentenceExplorerOriginal = document.getElementById('sentence-explorer-original');
-  const sentenceExplorerOptions = document.getElementById('sentence-explorer-options');
+  let sentenceExplorerCard: HTMLElement | null = null;
+  let sentenceExplorerClose: HTMLElement | null = null;
+  let sentenceExplorerOriginal: HTMLElement | null = null;
+  let sentenceExplorerOptions: HTMLElement | null = null;
 
-  const actionRegenerate = document.getElementById('action-regenerate');
-  const actionDownload = document.getElementById('action-download');
-  const actionCopy = document.getElementById('action-copy');
+  let actionRegenerate: HTMLElement | null = null;
+  let actionDownload: HTMLElement | null = null;
+  let actionCopy: HTMLElement | null = null;
 
-  const fileUploadInput = document.getElementById('file-upload') as HTMLInputElement;
-  const actionPasteBtn = document.getElementById('action-paste');
-  const actionClearBtn = document.getElementById('action-clear');
+  let fileUploadInput: HTMLInputElement | null = null;
+  let actionPasteBtn: HTMLElement | null = null;
+  let actionClearBtn: HTMLElement | null = null;
 
   // Syllables estimation helper
   function estimateSyllables(word: string): number {
@@ -717,19 +708,7 @@ import ElectricBorder from './ElectricBorder.jsx';
     }
   }
 
-  if (historyToggleBtn) historyToggleBtn.addEventListener('click', openHistoryDrawer);
-  if (historyDrawerClose) historyDrawerClose.addEventListener('click', closeHistoryDrawer);
-  if (historyDrawerBackdrop) historyDrawerBackdrop.addEventListener('click', closeHistoryDrawer);
-  if (historyClearAllBtn) {
-    historyClearAllBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear your local history log?')) {
-        state.history = [];
-        localStorage.removeItem('humanizer_history');
-        renderHistoryList();
-        showToast('Workspace history cleared', 'info');
-      }
-    });
-  }
+  // Event listeners are initialized in initWorkspace below
 
   // Toast systems
   function showToast(message: string, type: 'success' | 'error' | 'info' = 'success') {
@@ -779,72 +758,7 @@ import ElectricBorder from './ElectricBorder.jsx';
     }
   }
 
-  if (inputEl) {
-    inputEl.addEventListener('input', updateCounters);
-  }
-
-  // Paste action
-  if (actionPasteBtn) {
-    actionPasteBtn.addEventListener('click', async () => {
-      try {
-        const clipText = await navigator.clipboard.readText();
-        if (inputEl) {
-          inputEl.value = clipText;
-          updateCounters();
-          showToast('Text pasted from clipboard', 'info');
-        }
-      } catch (err) {
-        showToast('Clipboard access denied. Please paste manually.', 'error');
-      }
-    });
-  }
-
-  // Clear action
-  if (actionClearBtn) {
-    actionClearBtn.addEventListener('click', () => {
-      if (inputEl) {
-        inputEl.value = '';
-        updateCounters();
-        showToast('Workspace cleared', 'info');
-      }
-    });
-  }
-
-  // File upload parsing
-  if (fileUploadInput) {
-    fileUploadInput.addEventListener('change', (e) => {
-      const target = e.target as HTMLInputElement;
-      if (target.files && target.files[0]) {
-        const file = target.files[0];
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          if (inputEl && evt.target) {
-            inputEl.value = evt.target.result as string;
-            updateCounters();
-            showToast(`Loaded ${file.name} successfully`, 'success');
-          }
-        };
-        reader.readAsText(file);
-      }
-    });
-  }
-
-  // Mode Selection Events
-  document.querySelectorAll('.mode-selector-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const mode = (e.target as HTMLElement).getAttribute('data-mode') || 'standard';
-      state.mode = mode;
-
-      document.querySelectorAll('.mode-selector-btn').forEach(b => {
-        b.classList.remove('bg-primary', 'text-on-primary', 'border-hairline-strong');
-        b.classList.add('bg-canvas', 'text-body', 'border-hairline');
-      });
-
-      const element = e.target as HTMLElement;
-      element.classList.add('bg-primary', 'text-on-primary', 'border-hairline-strong');
-      element.classList.remove('bg-canvas', 'text-body', 'border-hairline');
-    });
-  });
+  // Inputs, Clear, Paste, Upload and Mode selectors event listeners are initialized in initWorkspace below
 
   // Strength slider labels mapping
   function updateStrengthLabel(val: number) {
@@ -854,11 +768,7 @@ import ElectricBorder from './ElectricBorder.jsx';
     else strengthValLabel.textContent = 'High';
   }
 
-  if (paramStrength) {
-    paramStrength.addEventListener('input', (e) => {
-      updateStrengthLabel(parseInt((e.target as HTMLInputElement).value));
-    });
-  }
+  // Strength input listener is initialized in initWorkspace below
 
 
 
@@ -1054,10 +964,7 @@ import ElectricBorder from './ElectricBorder.jsx';
     return rewrittenParagraphs;
   }
 
-  // UI trigger for check/humanize
-  if (actionHumanize) actionHumanize.addEventListener('click', () => processText(true));
-
-  if (actionRegenerate) actionRegenerate.addEventListener('click', () => processText(true));
+  // Humanize triggers are initialized in initWorkspace below
 
   async function processText(shouldHumanize: boolean) {
     if (!inputEl) return;
@@ -1076,10 +983,7 @@ import ElectricBorder from './ElectricBorder.jsx';
 
     const activeWordLimit = state.user ? state.user.wordLimit : 500;
     if (words.length > activeWordLimit) {
-      showToast(`Text exceeds the maximum limit of ${activeWordLimit} words. Please upgrade to Premium.`, 'error');
-      if (confirm(`Your text contains ${words.length} words, which exceeds the limit of ${activeWordLimit} words.\n\nWould you like to upgrade to Premium to humanize up to 2,000 words instantly?`)) {
-        window.location.href = "/checkout/";
-      }
+      window.location.href = "/checkout/";
       return;
     }
 
@@ -1313,12 +1217,7 @@ import ElectricBorder from './ElectricBorder.jsx';
 
     displayResults(resultPayload);
     
-    if (shouldHumanize && usedApi) {
-      const modelName = apiData.model || 'AI engine';
-      showToast(`Text humanized with ${modelName} — should bypass detectors!`, 'success');
-    } else if (shouldHumanize) {
-      showToast('Humanized with local engine (add API key for best results)', 'info');
-    } else {
+    if (!shouldHumanize) {
       showToast('AI likelihood scanning complete.', 'success');
     }
   }
@@ -1424,82 +1323,6 @@ import ElectricBorder from './ElectricBorder.jsx';
     });
   }
 
-  if (sentenceExplorerClose) {
-    sentenceExplorerClose.addEventListener('click', () => {
-      if (sentenceExplorerCard) sentenceExplorerCard.classList.add('hidden');
-    });
-  }
-
-  // Close Explorer when clicking anywhere outside
-  document.addEventListener('click', () => {
-    if (sentenceExplorerCard) sentenceExplorerCard.classList.add('hidden');
-  });
-
-  // Toggle changes/diff filters
-  if (toggleDiffBtn && toggleHighlightsBtn) {
-    toggleDiffBtn.addEventListener('click', () => {
-      state.showDiff = true;
-      state.showHighlights = false;
-      
-      toggleDiffBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
-      toggleHighlightsBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded text-mute hover:text-ink transition-all duration-150 cursor-pointer";
-      
-      renderOutputText();
-    });
-
-    toggleHighlightsBtn.addEventListener('click', () => {
-      state.showDiff = false;
-      state.showHighlights = true;
-      
-      toggleHighlightsBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
-      toggleDiffBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded text-mute hover:text-ink transition-all duration-150 cursor-pointer";
-      
-      renderOutputText();
-    });
-  }
-
-  // Copy to clipboard Action
-  if (actionCopy) {
-    actionCopy.addEventListener('click', () => {
-      if (!state.currentResponse) return;
-      
-      // Extract flattened plain text
-      let text = '';
-      state.currentResponse.sentences.forEach((s: any) => {
-        text += s.rewritten + ' ';
-      });
-      text = text.trim();
-
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('Text copied to clipboard!', 'success');
-      }).catch(() => {
-        showToast('Failed to copy text.', 'error');
-      });
-    });
-  }
-
-  // File download action
-  if (actionDownload) {
-    actionDownload.addEventListener('click', () => {
-      if (!state.currentResponse) return;
-
-      let text = '';
-      state.currentResponse.sentences.forEach((s: any) => {
-        text += s.rewritten + ' ';
-      });
-      text = text.trim();
-
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `humanized-text-${Date.now()}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('Download started', 'success');
-    });
-  }
-
   // Dialog actions for limit prompts
   function showAuthModal() {
     if (confirm("You've reached the daily limit of 10 humanizations. Please sign up or sign in to track your limits and get more runs, or upgrade to Premium for ₹199. Go to Sign In?")) {
@@ -1536,9 +1359,225 @@ import ElectricBorder from './ElectricBorder.jsx';
     }
   }
 
-  // Lifecycle boot
-  loadHistory();
-  fetchUserStatus();
+  // Workspace Initialization Engine
+  let initialized = false;
+
+  function initWorkspace() {
+    const checkEl = document.getElementById('workspace-input') as HTMLTextAreaElement;
+    const checkOutEl = document.getElementById('humanized-text-container');
+    if (!checkEl || !checkOutEl) {
+      requestAnimationFrame(initWorkspace);
+      return;
+    }
+
+    if (initialized) return;
+    initialized = true;
+
+    // Resolve elements
+    inputEl = checkEl;
+    inputWordCountEl = document.getElementById('input-word-count');
+    inputCharCountEl = document.getElementById('input-char-count');
+    wordLimitIndicator = document.getElementById('word-limit-indicator');
+    historyToggleBtn = document.getElementById('toggle-history-btn');
+    historyDrawer = document.getElementById('history-drawer');
+    historyDrawerClose = document.getElementById('history-drawer-close');
+    historyDrawerBackdrop = document.getElementById('history-drawer-backdrop');
+    historyItemsContainer = document.getElementById('history-items-container');
+    historyClearAllBtn = document.getElementById('history-clear-all');
+
+    humanizerParamsCard = document.getElementById('humanizer-params-card');
+    paramStrength = document.getElementById('param-strength') as HTMLInputElement;
+    paramTone = document.getElementById('param-tone') as HTMLSelectElement;
+    paramLanguage = document.getElementById('param-language') as HTMLSelectElement;
+    paramExclusions = document.getElementById('param-exclusions') as HTMLInputElement;
+
+    actionHumanize = document.getElementById('action-humanize');
+    strengthValLabel = document.getElementById('strength-val-label');
+    dailyLimitDot = document.getElementById('daily-limit-dot');
+    dailyLimitStatus = document.getElementById('daily-limit-status');
+    
+    emptyStateCard = document.getElementById('empty-state-card');
+    processingCard = document.getElementById('processing-card');
+    resultsCard = document.getElementById('results-card');
+
+    metricAiBefore = document.getElementById('metric-ai-before');
+    metricAiAfter = document.getElementById('metric-ai-after');
+
+    humanizedTextContainer = document.getElementById('humanized-text-container');
+    outputWordCountEl = document.getElementById('output-word-count');
+    toggleDiffBtn = document.getElementById('toggle-diff');
+    toggleHighlightsBtn = document.getElementById('toggle-highlights');
+    
+    sentenceExplorerCard = document.getElementById('sentence-explorer-card');
+    sentenceExplorerClose = document.getElementById('sentence-explorer-close');
+    sentenceExplorerOriginal = document.getElementById('sentence-explorer-original');
+    sentenceExplorerOptions = document.getElementById('sentence-explorer-options');
+
+    actionRegenerate = document.getElementById('action-regenerate');
+    actionDownload = document.getElementById('action-download');
+    actionCopy = document.getElementById('action-copy');
+
+    fileUploadInput = document.getElementById('file-upload') as HTMLInputElement;
+    actionPasteBtn = document.getElementById('action-paste');
+    actionClearBtn = document.getElementById('action-clear');
+
+    // Attach listeners
+    if (historyToggleBtn) historyToggleBtn.addEventListener('click', openHistoryDrawer);
+    if (historyDrawerClose) historyDrawerClose.addEventListener('click', closeHistoryDrawer);
+    if (historyDrawerBackdrop) historyDrawerBackdrop.addEventListener('click', closeHistoryDrawer);
+    if (historyClearAllBtn) {
+      historyClearAllBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear your local history log?')) {
+          state.history = [];
+          localStorage.removeItem('humanizer_history');
+          renderHistoryList();
+          showToast('Workspace history cleared', 'info');
+        }
+      });
+    }
+
+    if (inputEl) {
+      inputEl.addEventListener('input', updateCounters);
+    }
+
+    if (actionPasteBtn) {
+      actionPasteBtn.addEventListener('click', async () => {
+        try {
+          const clipText = await navigator.clipboard.readText();
+          if (inputEl) {
+            inputEl.value = clipText;
+            updateCounters();
+            showToast('Text pasted from clipboard', 'info');
+          }
+        } catch (err) {
+          showToast('Clipboard access denied. Please paste manually.', 'error');
+        }
+      });
+    }
+
+    if (actionClearBtn) {
+      actionClearBtn.addEventListener('click', () => {
+        if (inputEl) {
+          inputEl.value = '';
+          updateCounters();
+          showToast('Workspace cleared', 'info');
+        }
+      });
+    }
+
+    if (fileUploadInput) {
+      fileUploadInput.addEventListener('change', (e) => {
+        const target = e.target as HTMLInputElement;
+        if (target.files && target.files[0]) {
+          const file = target.files[0];
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            if (inputEl && evt.target) {
+              inputEl.value = evt.target.result as string;
+              updateCounters();
+              showToast(`Loaded ${file.name} successfully`, 'success');
+            }
+          };
+          reader.readAsText(file);
+        }
+      });
+    }
+
+    document.querySelectorAll('.mode-selector-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const mode = (e.target as HTMLElement).getAttribute('data-mode') || 'standard';
+        state.mode = mode;
+
+        document.querySelectorAll('.mode-selector-btn').forEach(b => {
+          b.classList.remove('bg-primary', 'text-on-primary', 'border-hairline-strong');
+          b.classList.add('bg-canvas', 'text-body', 'border-hairline');
+        });
+
+        const element = e.target as HTMLElement;
+        element.classList.add('bg-primary', 'text-on-primary', 'border-hairline-strong');
+        element.classList.remove('bg-canvas', 'text-body', 'border-hairline');
+      });
+    });
+
+    if (paramStrength) {
+      paramStrength.addEventListener('input', (e) => {
+        updateStrengthLabel(parseInt((e.target as HTMLInputElement).value));
+      });
+    }
+
+    if (actionHumanize) actionHumanize.addEventListener('click', () => processText(true));
+    if (actionRegenerate) actionRegenerate.addEventListener('click', () => processText(true));
+
+    if (sentenceExplorerClose) {
+      sentenceExplorerClose.addEventListener('click', () => {
+        if (sentenceExplorerCard) sentenceExplorerCard.classList.add('hidden');
+      });
+    }
+
+    document.addEventListener('click', () => {
+      if (sentenceExplorerCard) sentenceExplorerCard.classList.add('hidden');
+    });
+
+    if (toggleDiffBtn && toggleHighlightsBtn) {
+      toggleDiffBtn.addEventListener('click', () => {
+        state.showDiff = true;
+        state.showHighlights = false;
+        toggleDiffBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
+        toggleHighlightsBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded text-mute hover:text-ink transition-all duration-150 cursor-pointer";
+        renderOutputText();
+      });
+
+      toggleHighlightsBtn.addEventListener('click', () => {
+        state.showDiff = false;
+        state.showHighlights = true;
+        toggleHighlightsBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded bg-canvas text-ink shadow-sm transition-all duration-150 cursor-pointer";
+        toggleDiffBtn.className = "px-2.5 py-1 text-[10px] font-semibold rounded text-mute hover:text-ink transition-all duration-150 cursor-pointer";
+        renderOutputText();
+      });
+    }
+
+    if (actionCopy) {
+      actionCopy.addEventListener('click', () => {
+        if (!state.currentResponse) return;
+        let text = '';
+        state.currentResponse.sentences.forEach((s: any) => {
+          text += s.rewritten + ' ';
+        });
+        text = text.trim();
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Text copied to clipboard!', 'success');
+        }).catch(() => {
+          showToast('Failed to copy text.', 'error');
+        });
+      });
+    }
+
+    if (actionDownload) {
+      actionDownload.addEventListener('click', () => {
+        if (!state.currentResponse) return;
+        let text = '';
+        state.currentResponse.sentences.forEach((s: any) => {
+          text += s.rewritten + ' ';
+        });
+        text = text.trim();
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `humanized-text-${Date.now()}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Download started', 'success');
+      });
+    }
+
+    // Lifecycle boot
+    loadHistory();
+    fetchUserStatus();
+  }
+
+  // Start initialization sequence
+  initWorkspace();
 </script>
 
 <style>

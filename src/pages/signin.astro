@@ -72,84 +72,102 @@ import ElectricBorder from '../components/ElectricBorder.jsx';
 </Layout>
 
 <script>
-  const form = document.getElementById('signin-form') as HTMLFormElement;
-  const usernameInput = document.getElementById('username') as HTMLInputElement;
-  const passwordInput = document.getElementById('password') as HTMLInputElement;
-  const statusBanner = document.getElementById('status-banner');
-  const errorBanner = document.getElementById('error-banner');
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  let form: HTMLFormElement | null = null;
+  let usernameInput: HTMLInputElement | null = null;
+  let passwordInput: HTMLInputElement | null = null;
+  let statusBanner: HTMLElement | null = null;
+  let errorBanner: HTMLElement | null = null;
+  let submitBtn: HTMLButtonElement | null = null;
 
   // Check URL parameters for registered status
   const urlParams = new URLSearchParams(window.location.search);
   const redirect = urlParams.get('redirect');
   
-  if (redirect) {
-    const signupLink = document.querySelector('a[href="/signup/"]') as HTMLAnchorElement;
-    if (signupLink) {
-      signupLink.href = `/signup/?redirect=${encodeURIComponent(redirect)}`;
+  function initSignIn() {
+    const checkEl = document.getElementById('signin-form') as HTMLFormElement;
+    if (!checkEl) {
+      requestAnimationFrame(initSignIn);
+      return;
     }
-  }
 
-  if (urlParams.get('registered') === 'true' && statusBanner) {
-    statusBanner.textContent = 'Account created successfully! Please sign in.';
-    statusBanner.className = 'p-3 text-xs bg-success/10 text-link-deep border border-link/20 rounded-md';
-    statusBanner.classList.remove('hidden');
-    
-    const registeredUser = urlParams.get('username');
-    if (registeredUser && usernameInput) {
-      usernameInput.value = registeredUser;
+    form = checkEl;
+    usernameInput = document.getElementById('username') as HTMLInputElement;
+    passwordInput = document.getElementById('password') as HTMLInputElement;
+    statusBanner = document.getElementById('status-banner');
+    errorBanner = document.getElementById('error-banner');
+    submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+    if (redirect) {
+      const signupLink = document.querySelector('a[href="/signup/"]') as HTMLAnchorElement;
+      if (signupLink) {
+        signupLink.href = `/signup/?redirect=${encodeURIComponent(redirect)}`;
+      }
     }
-  }
 
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!errorBanner || !submitBtn || !statusBanner) return;
+    if (urlParams.get('registered') === 'true' && statusBanner) {
+      statusBanner.textContent = 'Account created successfully! Please sign in.';
+      statusBanner.className = 'p-3 text-xs bg-success/10 text-link-deep border border-link/20 rounded-md';
+      statusBanner.classList.remove('hidden');
+      
+      const registeredUser = urlParams.get('username');
+      if (registeredUser && usernameInput) {
+        usernameInput.value = registeredUser;
+      }
+    }
 
-    errorBanner.classList.add('hidden');
-    statusBanner.classList.add('hidden');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!errorBanner || !submitBtn || !statusBanner || !usernameInput || !passwordInput) return;
 
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
+      errorBanner.classList.add('hidden');
+      statusBanner.classList.add('hidden');
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `
-      <svg class="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      Signing In...
-    `;
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
 
-    try {
-      const response = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <svg class="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Signing In...
+      `;
 
-      const data = await response.json();
+      try {
+        const response = await fetch('/api/auth/signin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
 
-      if (response.ok) {
-        statusBanner.textContent = 'Login successful! Redirecting...';
-        statusBanner.className = 'p-3 text-xs bg-success/10 text-link-deep border border-link/20 rounded-md';
-        statusBanner.classList.remove('hidden');
+        const data = await response.json();
 
-        // Check if redirect target exists
-        const redirectUrl = urlParams.get('redirect') || '/';
-        setTimeout(() => {
-          window.location.href = redirectUrl;
-        }, 1000);
-      } else {
-        errorBanner.textContent = data.error || 'Login failed.';
+        if (response.ok) {
+          statusBanner.textContent = 'Login successful! Redirecting...';
+          statusBanner.className = 'p-3 text-xs bg-success/10 text-link-deep border border-link/20 rounded-md';
+          statusBanner.classList.remove('hidden');
+
+          // Check if redirect target exists
+          const redirectUrl = urlParams.get('redirect') || '/';
+          setTimeout(() => {
+            window.location.href = redirectUrl;
+          }, 1000);
+        } else {
+          errorBanner.textContent = data.error || 'Login failed.';
+          errorBanner.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In';
+        }
+      } catch (err) {
+        errorBanner.textContent = 'An unexpected error occurred. Please try again.';
         errorBanner.classList.remove('hidden');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Sign In';
       }
-    } catch (err) {
-      errorBanner.textContent = 'An unexpected error occurred. Please try again.';
-      errorBanner.classList.remove('hidden');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Sign In';
-    }
-  });
+    });
+  }
+
+  // Start initialization
+  initSignIn();
 </script>

@@ -3,9 +3,9 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { getAuthenticatedUser } from '../../../lib/db';
 
-export const GET: APIRoute = async ({ cookies }) => {
+export const GET: APIRoute = async ({ cookies, request }) => {
   try {
-    const user = await getAuthenticatedUser(cookies);
+    const user = await getAuthenticatedUser(cookies, request);
     if (!user) {
       return new Response(JSON.stringify({ loggedIn: false }), {
         status: 200,

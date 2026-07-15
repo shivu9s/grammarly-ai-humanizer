@@ -84,90 +84,109 @@ import ElectricBorder from '../components/ElectricBorder.jsx';
 </Layout>
 
 <script>
-  const form = document.getElementById('signup-form') as HTMLFormElement;
-  const usernameInput = document.getElementById('username') as HTMLInputElement;
-  const passwordInput = document.getElementById('password') as HTMLInputElement;
-  const confirmPasswordInput = document.getElementById('confirm-password') as HTMLInputElement;
-  const errorBanner = document.getElementById('error-banner');
-  const successBanner = document.getElementById('success-banner');
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  let form: HTMLFormElement | null = null;
+  let usernameInput: HTMLInputElement | null = null;
+  let passwordInput: HTMLInputElement | null = null;
+  let confirmPasswordInput: HTMLInputElement | null = null;
+  let errorBanner: HTMLElement | null = null;
+  let successBanner: HTMLElement | null = null;
+  let submitBtn: HTMLButtonElement | null = null;
 
   // Check URL parameters for redirect target
   const urlParams = new URLSearchParams(window.location.search);
   const redirect = urlParams.get('redirect');
 
-  if (redirect) {
-    const signinLink = document.querySelector('a[href="/signin/"]') as HTMLAnchorElement;
-    if (signinLink) {
-      signinLink.href = `/signin/?redirect=${encodeURIComponent(redirect)}`;
-    }
-  }
-
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!errorBanner || !successBanner || !submitBtn) return;
-
-    errorBanner.classList.add('hidden');
-    successBanner.classList.add('hidden');
-
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
-    const confirmPassword = confirmPasswordInput.value;
-
-    if (username.length < 3) {
-      errorBanner.textContent = 'Username must be at least 3 characters.';
-      errorBanner.classList.remove('hidden');
+  function initSignUp() {
+    const checkEl = document.getElementById('signup-form') as HTMLFormElement;
+    if (!checkEl) {
+      requestAnimationFrame(initSignUp);
       return;
     }
 
-    if (password.length < 6) {
-      errorBanner.textContent = 'Password must be at least 6 characters.';
-      errorBanner.classList.remove('hidden');
-      return;
+    form = checkEl;
+    usernameInput = document.getElementById('username') as HTMLInputElement;
+    passwordInput = document.getElementById('password') as HTMLInputElement;
+    confirmPasswordInput = document.getElementById('confirm-password') as HTMLInputElement;
+    errorBanner = document.getElementById('error-banner');
+    successBanner = document.getElementById('success-banner');
+    submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+    if (redirect) {
+      const signinLink = document.querySelector('a[href="/signin/"]') as HTMLAnchorElement;
+      if (signinLink) {
+        signinLink.href = `/signin/?redirect=${encodeURIComponent(redirect)}`;
+      }
     }
 
-    if (password !== confirmPassword) {
-      errorBanner.textContent = 'Passwords do not match.';
-      errorBanner.classList.remove('hidden');
-      return;
-    }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!errorBanner || !successBanner || !submitBtn || !usernameInput || !passwordInput || !confirmPasswordInput) return;
 
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `
-      <svg class="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      Creating Account...
-    `;
+      errorBanner.classList.add('hidden');
+      successBanner.classList.add('hidden');
 
-    try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
 
-      const data = await response.json();
+      if (username.length < 3) {
+        errorBanner.textContent = 'Username must be at least 3 characters.';
+        errorBanner.classList.remove('hidden');
+        return;
+      }
 
-      if (response.ok) {
-        successBanner.textContent = 'Registration successful! Redirecting to Sign In...';
-        successBanner.classList.remove('hidden');
-        const redirectSuffix = redirect ? `&redirect=${encodeURIComponent(redirect)}` : '';
-        setTimeout(() => {
-          window.location.href = `/signin/?registered=true&username=${encodeURIComponent(username)}${redirectSuffix}`;
-        }, 1500);
-      } else {
-        errorBanner.textContent = data.error || 'Registration failed.';
+      if (password.length < 6) {
+        errorBanner.textContent = 'Password must be at least 6 characters.';
+        errorBanner.classList.remove('hidden');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorBanner.textContent = 'Passwords do not match.';
+        errorBanner.classList.remove('hidden');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <svg class="animate-spin h-4 w-4 text-on-primary" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Creating Account...
+      `;
+
+      try {
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          successBanner.textContent = 'Registration successful! Redirecting to Sign In...';
+          successBanner.classList.remove('hidden');
+          const redirectSuffix = redirect ? `&redirect=${encodeURIComponent(redirect)}` : '';
+          setTimeout(() => {
+            window.location.href = `/signin/?registered=true&username=${encodeURIComponent(username)}${redirectSuffix}`;
+          }, 1500);
+        } else {
+          errorBanner.textContent = data.error || 'Registration failed.';
+          errorBanner.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account';
+        }
+      } catch (err) {
+        errorBanner.textContent = 'An unexpected error occurred. Please try again.';
         errorBanner.classList.remove('hidden');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Create Account';
       }
-    } catch (err) {
-      errorBanner.textContent = 'An unexpected error occurred. Please try again.';
-      errorBanner.classList.remove('hidden');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Create Account';
-    }
-  });
+    });
+  }
+
+  // Start initialization
+  initSignUp();
 </script>
